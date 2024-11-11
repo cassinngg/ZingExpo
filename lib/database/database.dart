@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:zingexpo/sample/bottomnavbarsample.dart';
+import 'package:zingexpo/screens/BottomNavigationBars/bottomnavbarsample.dart';
 
 Future<Position> _determinePosition() async {
   bool serviceEnabled;
@@ -108,7 +108,12 @@ class LocalDatabase {
   latitude TEXT,
   longitude TEXT,
   elevation TEXT,
-  capture_date DATE
+  project_id INTEGER,
+  quadrat_id, INTEGER,
+  capture_date DATE,
+  FOREIGN KEY (project_id) REFERENCES Projects(project_id),
+  FOREIGN KEY (quadrat_id) REFERENCES Quadrats(quadrat_id)
+  
   );
   ''');
 
@@ -327,6 +332,26 @@ VALUES
     }
   }
 
+  static Future<Position> SampleGetCurrentLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location Services are disabled.');
+    }
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location Permission are denied');
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location Services are permanently denied, we cannot request Lcoation.');
+    }
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
+
   Future<Position> getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -387,6 +412,11 @@ VALUES
     } catch (e) {
       print('Error inserting quadrat: $e');
     }
+  }
+
+  Future<List<Map<String, Object?>>> readDataImages() async {
+    final db = await database;
+    return await db.query("image_meta_data");
   }
 
   Future<List<Map<String, Object?>>> readData() async {
@@ -546,5 +576,31 @@ VALUES
         where: "project_name LIKE ? OR project_description LIKE ?",
         whereIn: ["%$searchTerm%", "%$searchTerm%"]);
     return results;
+  }
+
+  Future<List<String>> getImagesForQuadrat(int projectId) async {
+    // Replace with your actual database query logic
+    List<String> imagePaths = [];
+
+    // Example query to fetch image paths for the given quadrat ID
+    final db =
+        await database; // Assuming you have a method to get the database instance
+    // final List<Map<String, dynamic>> maps = await db.query(
+    //   'images', // Replace with your actual images table name
+    //   where: 'quadrat_id = ?', // Assuming you have a foreign key relationship
+    //   whereArgs: [quadratId],
+    // );
+    final List<Map<String, dynamic>> maps = await db.query(
+      'Quadrats', // Replace with your actual images table name
+      where: 'project_id = ?', // Assuming you have a foreign key relationship
+      whereArgs: [projectId],
+    );
+    // Extract image paths from the query result
+    for (var map in maps) {
+      imagePaths.add(map[
+          'path']); // Replace 'path' with the actual column name for image paths
+    }
+
+    return imagePaths;
   }
 }

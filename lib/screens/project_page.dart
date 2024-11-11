@@ -11,6 +11,7 @@ import 'package:zingexpo/widgets/heading_page.dart';
 class SpecificProjectSample extends StatefulWidget {
   final Map<String, dynamic> allData;
   final int projectID;
+
   const SpecificProjectSample(
       {super.key, required this.allData, required this.projectID});
 
@@ -284,7 +285,7 @@ class NavigationController extends GetxController {
   final screens = [
     // addQuadrat(allData: allData, projectID: projectID),
     const Home(),
-    const RealtimeCamScreen(),
+    RealtimeCamScreen(),
     // const ShareQuadrat(),
   ];
 }

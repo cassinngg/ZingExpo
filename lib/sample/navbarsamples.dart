@@ -288,7 +288,7 @@ class NavigationController extends GetxController {
   final screens = [
     // addQuadrat(allData: allData, projectID: projectID),
     const Home(),
-    const RealtimeCamScreen(),
+    RealtimeCamScreen(),
     //  ShareQuadrat(),
   ];
 }

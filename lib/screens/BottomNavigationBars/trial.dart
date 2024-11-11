@@ -166,8 +166,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                         case 2:
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    const RealtimeCamScreen()),
+                                builder: (context) => RealtimeCamScreen()),
                           );
                           break;
                         case 3:

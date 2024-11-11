@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zingexpo/location/metadata.dart';
 import 'package:zingexpo/sample/species_library.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/trial.dart';
 import 'package:zingexpo/screens/add_ginger/display_gingers.dart';

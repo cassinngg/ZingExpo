@@ -1,217 +1,207 @@
 import 'dart:io';
 
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:zingexpo/database/database.dart';
-import 'package:zingexpo/sample/sample2.dart';
-import 'package:zingexpo/samples/add%20button.dart';
-import 'package:zingexpo/screens/home.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:zingexpo/database/firestore_service.dart';
+import 'package:zingexpo/database/database_helper.dart';
 
-class sample1 extends StatefulWidget {
-  @override
-  State<sample1> createState() => _sample1State();
-}
+class ImageListScreen extends StatelessWidget {
+  final DatabaseHelper dbHelper = DatabaseHelper();
 
-class _sample1State extends State<sample1> {
-  File? _selectedImage;
-  String imageUrl = '';
-  List<Map<String, dynamic>> _allData = [];
+  ImageListScreen({super.key});
 
-  final TextEditingController project_nameController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController locationController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _initDatabase();
-  }
-
-  Future<void> _selectOrCaptureImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-    setState(() {
-      if (pickedFile != null) {
-        _selectedImage = File(pickedFile.path);
-      } else {
-        _selectedImage = null;
-      }
-    });
-  }
-
-  Future<void> _initDatabase() async {
-    try {
-      await LocalDatabase().database;
-      print('Database initialized successfully');
-    } catch (e) {
-      print('Error initializing database: $e');
-    }
-  }
-
-  Future<void> _loadData() async {
-    final data = await LocalDatabase().readData();
-    setState(() {
-      _allData = data;
-    });
+  Future<List<Map<String, dynamic>>> _fetchImages() async {
+    return await dbHelper.getAllImages();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Add Project'),
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: pickImageFromGallery,
-                    icon: const Icon(
-                      Icons.photo,
-                      color: Colors.green,
-                      size: 30,
-                    ),
-                  ),
-                  TextField(
-                    controller: project_nameController,
-                    decoration: InputDecoration(
-                      labelText: 'Title',
-                      fillColor: Color(0xFF023C0E),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                            10), // Adjust the radius as needed
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    controller: descriptionController,
-                    decoration: InputDecoration(
-                      labelText: 'Species',
-                      fillColor: Color(0xFF023C0E),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                            10), // Adjust the radius as needed
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    controller: locationController,
-                    decoration: InputDecoration(
-                      labelText: 'Quadrat',
-                      fillColor: Color(0xFF023C0E),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                            10), // Adjust the radius as needed
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: _selectOrCaptureImage,
-                    child: Text('Select/Capture Image'),
-                  ),
-                  _selectedImage != null
-                      ? Image.file(_selectedImage!)
-                      : Text('No image selected'),
-                  ElevatedButton(
-                    onPressed: () async {
-                      // final String title = titleController.text;
-                      // final String species = speciesController.text;
-                      // final String quadrat = quadratController.text;
-
-                      if (project_nameController.text.isNotEmpty) {
-                        await LocalDatabase().addProject(
-                            project_name: project_nameController.text,
-                            project_description: descriptionController.text,
-                            project_location: locationController.text,
-                            imageFile: _selectedImage);
-                      }
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text(
-                                'You have successfully saved a Zingibereaceae family')),
-                      );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => sample2()),
-                      );
-
-                      // Implement logic to save data to the database
-                    },
-                    child: Text(
-                      'Save',
-                      style: TextStyle(
-                        color: Color(0xFF023C0E),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  ListView.builder(
-                      shrinkWrap: true,
-                      controller: ScrollController(),
-                      itemCount: alldatalist
-                          .length, // Ensure AllDataList is accessible here
-                      itemBuilder: (context, index) {
-                        return Container(
-                            margin: EdgeInsets.symmetric(horizontal: 20),
-                            height: 90,
-                            width: double.infinity,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(alldatalist[index]['Name']),
-                                // Text(AllDataList[index]['Text']),
-                              ],
-                            ));
-                      }),
-                ],
-              ),
-            ),
-          ),
-        ));
+      appBar: AppBar(title: Text('Saved Images')),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _fetchImages(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          final images = snapshot.data!;
+          return ListView.builder(
+            itemCount: images.length,
+            itemBuilder: (context, index) {
+              final image = images[index];
+              return ListTile(
+                leading: Image.file(File(image['image_path'])),
+                title: Text(image['image_name']),
+                subtitle: Text(
+                  'Lat: ${image['latitude']}, Long: ${image['longitude']}, Elev: ${image['elevation']}\nDate: ${image['capture_date']}',
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 }
-//             ],
-//           ),
-//         ),
+
+// import 'dart:io';
+// import 'package:flutter/material.dart';
+// import 'package:zingexpo/database/database_helper.dart';
+// import 'package:path_provider/path_provider.dart';
+// import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart'
+//     as permission_handler;
+
+// class ImageListScreen extends StatelessWidget {
+//   final DatabaseHelper dbHelper = DatabaseHelper();
+
+//   Future<List<Map<String, dynamic>>> _fetchImages() async {
+//     return await dbHelper.getAllImages();
+//   }
+
+//   Future<bool> requestStoragePermission() async {
+//     // Check if the storage permission is already granted
+//     permission_handler.PermissionStatus status =
+//         await permission_handler.Permission.storage.status;
+
+//     if (status.isGranted) {
+//       return true; // If granted, return true
+//     }
+
+//     // If permission is denied, request permission
+//     if (status.isDenied) {
+//       status = await permission_handler.Permission.storage.request();
+//       if (status.isGranted) {
+//         return true;
+//       }
+//     }
+
+//     // If the permission is permanently denied, return error
+//     if (status.isPermanentlyDenied) {
+//       return Future.error(
+//           'Storage permission is permanently denied. Please enable it in app settings.');
+//     }
+
+//     return false; // Return false if permission is not granted or denied
+//   }
+
+  // Future<void> _downloadImage(
+  //     BuildContext context, String imagePath, String imageName) async {
+  //   try {
+  //     // Request storage permissions
+  //     var status = await Permission.storage.request();
+  //     if (status.isGranted) {
+  //       // Define the path for saving the image in the Downloads folder
+  //       final downloadDir = Directory('/storage/emulated/0/Download');
+
+  //       // Ensure that the Downloads directory exists
+  //       if (!downloadDir.existsSync()) {
+  //         await downloadDir.create(recursive: true);
+  //       }
+
+  //       // Generate a unique file name in the Downloads folder to avoid overwriting
+  //       final downloadPath =
+  //           '${downloadDir.path}/$imageName-${DateTime.now().millisecondsSinceEpoch}.png';
+
+  //       // Copy the image file to the Downloads folder
+  //       final imageFile = File(imagePath);
+  //       if (await imageFile.exists()) {
+  //         await imageFile.copy(downloadPath);
+  //         // Notify the user of success
+  //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //           content: Text('Image downloaded to $downloadPath'),
+  //         ));
+  //       } else {
+  //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //           content: Text('Image file not found!'),
+  //         ));
+  //       }
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //         content: Text('Storage permission denied! Unable to download image.'),
+  //       ));
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       content: Text('Error downloading image: $e'),
+  //     ));
+  //   }
+  // }
+//   Future<void> _downloadImage(
+//       BuildContext context, String imagePath, String imageName) async {
+//     bool permissionGranted = await requestStoragePermission();
+//     if (!permissionGranted) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text("Storage permission not granted")),
+//       );
+//       return;
+//     }
+
+//     try {
+//       // Access the Downloads folder or create it if it doesn't exist
+//       final downloadDir = Directory('/storage/emulated/0/Download');
+//       if (!downloadDir.existsSync()) {
+//         await downloadDir.create(recursive: true);
+//       }
+
+//       // Define download path and copy the image
+//       final downloadPath =
+//           '${downloadDir.path}/$imageName-${DateTime.now().millisecondsSinceEpoch}.png';
+//       final imageFile = File(imagePath);
+//       if (await imageFile.exists()) {
+//         await imageFile.copy(downloadPath);
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('Image downloaded to $downloadPath')),
+//         );
+//       } else {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('Image file not found!')),
+//         );
+//       }
+//     } catch (e) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Error downloading image: $e')),
+//       );
+//     }
+//   }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text('Saved Images')),
+//       body: FutureBuilder<List<Map<String, dynamic>>>(
+//         future: _fetchImages(),
+//         builder: (context, snapshot) {
+//           if (!snapshot.hasData) {
+//             return Center(child: CircularProgressIndicator());
+//           }
+//           final images = snapshot.data!;
+//           return ListView.builder(
+//             itemCount: images.length,
+//             itemBuilder: (context, index) {
+//               final image = images[index];
+//               return ListTile(
+//                 leading: Image.file(File(image['image_path'])),
+//                 title: Text(image['image_name']),
+//                 subtitle: Text(
+//                   'Lat: ${image['latitude']}, Long: ${image['longitude']}, Elev: ${image['elevation']}\nDate: ${image['capture_date']}',
+//                 ),
+//                 trailing: IconButton(
+//                   icon: Icon(Icons.download),
+//                   onPressed: () async {
+//                     await _downloadImage(
+//                         context, image['image_path'], image['image_name']);
+//                   },
+//                 ),
+//               );
+//             },
+//           );
+//         },
 //       ),
-//     ),
-//   );
+//     );
+//   }
 // }
 
-void pickImageFromGallery() async {
-  ImagePicker imagePicker = ImagePicker();
-  XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
-  print('${file?.path}');
 
-  if (file == null) return;
-  String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
 
-  //get reference to storage root
-  // Reference referenceRoot = FirebaseStorage.instance.ref();
-  // Reference referenceDirImages = referenceRoot.child('images');
-  // Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
 
-  //handle error
-  // try {
-  //   //store file
-  //   await referenceImageToUpload.putFile(File(file!.path));
-  //   //success get download url
-  //   imageUrl = await referenceImageToUpload.getDownloadURL();
-  // } catch (error) {}
-}
+
+
+

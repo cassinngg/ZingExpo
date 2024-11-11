@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
-import 'package:zingexpo/sample/sample2.dart';
+import 'package:zingexpo/screens/meta_data_related/image_meta_data.dart';
 import 'package:zingexpo/samples/add%20button.dart';
 import 'package:zingexpo/screens/home.dart';
 import 'package:zingexpo/widgets/boxes/input_box.dart';

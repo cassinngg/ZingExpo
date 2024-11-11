@@ -37,8 +37,8 @@ class _SpecificProjectState extends State<SpecificProject> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: const Text('Confirm Deletion'),
-                    content:
-                        const Text('Are you sure you want to delete this project?'),
+                    content: const Text(
+                        'Are you sure you want to delete this project?'),
                     actions: <Widget>[
                       TextButton(
                         child: const Text('Cancel'),
@@ -124,6 +124,7 @@ class _SpecificProjectState extends State<SpecificProject> {
                       // Refresh the quadrat data after deletion
                       // _fetchQuadrats(); // Fetch the updated list
                     },
+                    projectID: 1,
                   );
                 },
               ),

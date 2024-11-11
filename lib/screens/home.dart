@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:zingexpo/database/database.dart';
 import 'package:zingexpo/location/location.dart';
 import 'package:zingexpo/widgets/home_tabs/archive_tab.dart';
 import 'package:zingexpo/widgets/home_tabs/projects_tab.dart';
+import 'package:permission_handler/permission_handler.dart'
+    as permission_handler; // Alias permission_handler
+
 // Uncomment the next line if you actually need to use DatabaseService
 // import 'package:zingexpo/database/database.dart';
 

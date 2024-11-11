@@ -67,4 +67,5 @@ class LocationService {
 
     return await location.getLocation();
   }
+  
 }

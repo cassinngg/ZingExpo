@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
-import 'package:zingexpo/sample/bottomnavbarsample.dart';
+import 'package:zingexpo/screens/BottomNavigationBars/bottomnavbarsample.dart';
 import 'package:zingexpo/screens/project_page.dart';
 
 class CardDesign extends StatefulWidget {

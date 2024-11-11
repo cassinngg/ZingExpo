@@ -225,6 +225,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:zingexpo/database/database.dart';
+import 'package:zingexpo/sample/file_access.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/camera_identify.dart';
 import 'package:zingexpo/widgets/card_ginger.dart';
 import 'package:zingexpo/widgets/heading_quadrat.dart';
@@ -232,12 +233,14 @@ import 'package:zingexpo/widgets/quadratcarddesign.dart';
 
 class SpecificQuadrat extends StatefulWidget {
   final Map<String, dynamic> allData;
+  final int projectID;
   final int quadratID;
 
   const SpecificQuadrat({
     super.key, // Added key parameter for better widget tree management
     required this.allData,
     required this.quadratID,
+    required this.projectID,
   });
 
   @override
@@ -277,7 +280,7 @@ class _SpecificQuadratState extends State<SpecificQuadrat> {
     // final projectID = widget.allData;
     // Fetch ginger data using the quadrat ID
     quadratData = await LocalDatabase().getGingersFromQuadrats(quadratID);
-      setState(() {
+    setState(() {
       _isLoading = false; // Loading done
     });
   }
@@ -307,7 +310,8 @@ class _SpecificQuadratState extends State<SpecificQuadrat> {
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator()) // Show loading indicator
+          ? const Center(
+              child: CircularProgressIndicator()) // Show loading indicator
           : SingleChildScrollView(
               child: Container(
                 alignment: Alignment.centerLeft,
@@ -362,7 +366,8 @@ class _SpecificQuadratState extends State<SpecificQuadrat> {
                               ),
                             ),
                           )
-                        : const Center(child: Text("No recent projects available.")),
+                        : const Center(
+                            child: Text("No recent projects available.")),
                     const SizedBox(height: 10),
                     Text(
                       "Identified Sub-family",
@@ -405,7 +410,18 @@ class _SpecificQuadratState extends State<SpecificQuadrat> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const RealtimeCamScreen()),
+                MaterialPageRoute(
+                    builder: (context) => ProjectShareExample(
+                          projectData: {
+                            'project_id': widget.projectID,
+                            'project_name': widget.allData['project_name'],
+                            'project_description':
+                                widget.allData['project_description'],
+                            'project_location':
+                                widget.allData['project_location'],
+                          },
+                          projectID: widget.projectID,
+                        )),
               );
             },
             backgroundColor: const Color.fromARGB(255, 8, 82, 10),

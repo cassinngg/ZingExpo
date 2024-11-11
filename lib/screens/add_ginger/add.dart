@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zingexpo/database/database.dart';
-import 'package:zingexpo/sample/sample2.dart';
+import 'package:zingexpo/screens/meta_data_related/image_meta_data.dart';
 import 'package:zingexpo/samples/add%20button.dart';
 import 'package:zingexpo/screens/home.dart';
 // import 'package:image_picker/image_picker.dart';
@@ -134,10 +134,10 @@ class _AddGingerPageState extends State<AddGingerPage> {
                             content: Text(
                                 'You have successfully saved a Zingibereaceae family')),
                       );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => sample2()),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => sample2()),
+                      // );
 
                       // Implement logic to save data to the database
                     },

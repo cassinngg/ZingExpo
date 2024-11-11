@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
+import 'package:zingexpo/sample/sam.dart';
+import 'package:zingexpo/screens/meta_data_related/image_meta_data.dart';
 import 'package:zingexpo/widgets/specific_quadrat_page.dart';
 
 class QuadratCard extends StatelessWidget {
   final Map<String, dynamic> allData;
   final int quadratID;
+  final int projectID;
   final VoidCallback onDelete; // Callback for deletion
 
   const QuadratCard({
@@ -14,6 +17,7 @@ class QuadratCard extends StatelessWidget {
     required this.allData,
     required this.quadratID,
     required this.onDelete,
+    required this.projectID,
   });
 
   @override
@@ -73,9 +77,12 @@ class QuadratCard extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => SpecificQuadrat(
-                                          allData: allData,
-                                          quadratID: quadratID)),
+                                    builder: (context) => ImageMetaData(),
+                                    // SpecificQuadrat(
+                                    //     allData: allData,
+                                    //     projectID: projectID,
+                                    //     quadratID: quadratID),
+                                  ),
                                 );
                               },
                               icon: const PhosphorIcon(

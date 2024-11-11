@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:zingexpo/database/database.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/camera_identify.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/share_quadrat.dart';
@@ -178,7 +177,7 @@ class _FloatingSampleState extends State<FloatingSample>
     }
 
     // Use the share_plus package to share the project details
-    Share.share(projectDetails, subject: 'Check out this project!');
+    // Share.share(projectDetails, subject: 'Check out this project!');
   }
 
   @override
@@ -397,6 +396,7 @@ class _FloatingSampleState extends State<FloatingSample>
                           itemBuilder: (BuildContext context, int index) {
                             return QuadratCard(
                               allData: quadratData[index],
+                              projectID: widget.projectID,
                               quadratID: quadratData[index]['quadrat_id'],
                               onDelete: () {
                                 _fetchQuadrats(); // Fetch the updated list
@@ -458,8 +458,7 @@ class _FloatingSampleState extends State<FloatingSample>
                         case 2:
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    const RealtimeCamScreen()),
+                                builder: (context) => RealtimeCamScreen()),
                           );
                           break;
                         case 3:
