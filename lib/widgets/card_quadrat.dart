@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
+import 'package:zingexpo/sample/backup_metadata.dart';
 import 'package:zingexpo/sample/sam.dart';
+import 'package:zingexpo/screens/identify/identify_camera.dart';
 import 'package:zingexpo/screens/meta_data_related/image_meta_data.dart';
 import 'package:zingexpo/widgets/specific_quadrat_page.dart';
 
@@ -77,7 +79,11 @@ class QuadratCard extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ImageMetaData(),
+                                    builder: (context) => ImageIdentify(
+                                      projectID: projectID,
+                                      allData: allData,
+                                      quadratID: quadratID,
+                                    ),
                                     // SpecificQuadrat(
                                     //     allData: allData,
                                     //     projectID: projectID,

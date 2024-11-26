@@ -35,10 +35,10 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> insertImageData(Map<String, dynamic> imageData) async {
-    final db = await database;
-    return await db.insert('image_meta_data', imageData);
-  }
+  // Future<int> insertImageData(Map<String, dynamic> imageData) async {
+  //   final db = await database;
+  //   return await db.insert('image_meta_data', imageData);
+  // }
 
   Future<List<Map<String, dynamic>>> getAllImages() async {
     final db = await database;

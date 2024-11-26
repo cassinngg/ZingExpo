@@ -1,89 +1,98 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:tflite/tflite.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
-//butngan ? sa tumoy for null safety
-//import camera package
-List<CameraDescription>? cameras;
-
-class Identify extends StatefulWidget {
-  const Identify({super.key});
+class ImageIdentify extends StatefulWidget {
+  const ImageIdentify({Key? key}) : super(key: key);
 
   @override
-  State<Identify> createState() => _IdentifyState();
+  State<ImageIdentify> createState() => _ImageIdentifyState();
 }
 
-class _IdentifyState extends State<Identify> {
-  //define camera image
-  //frame recorded by camera
-  CameraImage? cameraImage;
-  //camera controller define
-  CameraController? cameraController;
-  //output
+class _ImageIdentifyState extends State<ImageIdentify> {
   String output = '';
+  String? imagePath; // To store the path of the selected image
+  bool _isBusy = false; // Flag to prevent concurrent model runs
 
   @override
   void initState() {
     super.initState();
-    //call loadcamera function
-    //first functions to run in the app
-    loadCamera();
     loadModel();
   }
 
-  //define load function loadcamera
-  loadCamera() {
-    // assign camera cotroller
-
-    //define description and resolution
-    cameraController = CameraController(cameras![0], ResolutionPreset.medium);
-    //initialize camera controlller
-    cameraController!.initialize().then((value) {
-      //check if camera is mounted return nothing
-      if (!mounted) {
-        return;
-      } else {
-        setState(() {
-          cameraController!.startImageStream((imageStream) {
-            cameraImage = imageStream;
-            runModel();
-          });
-        });
-      }
-    });
+  Future<void> loadModel() async {
+    String? res = await Tflite.loadModel(
+      model: "assets/model.tflite",
+      labels: "assets/labels.txt",
+    );
+    print("Model loaded: $res");
   }
 
-  runModel() async {
-    if (cameraImage != null) {
-      //map plane
-      var predictions = await Tflite.runModelOnFrame(
-        bytesList: cameraImage!.planes.map((plane) {
-          return plane.bytes;
-        }).toList(),
-        imageHeight: cameraImage!.height,
-        imageWidth: cameraImage!.width,
-        imageMean: 127.5,
-        imageStd: 127.5,
-        rotation: 90,
-        numResults: 2,
-        //boundary
-        threshold: 0.1,
-        asynch: true,
-      );
-      //prediction loop,
-      predictions!.forEach((element) {
-        setState(() {
-          output = element['label'];
-        });
-      });
+  Future<void> openGallery() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      imagePath = pickedFile.path;
+      await classifyImage(File(imagePath!));
     }
   }
 
-//loadmodel function
-  loadModel() async {
-    await Tflite.loadModel(
-        model: "lib/model.tflite",
-        //define label
-        labels: "lib/labels.txt");
+  Future<void> classifyImage(File image) async {
+    if (_isBusy) {
+      print("Interpreter is busy. Please wait...");
+      return; // Prevent concurrent calls
+    }
+
+    setState(() {
+      _isBusy = true; // Set the busy flag
+    });
+
+    try {
+      var recognitions = await Tflite.runModelOnImage(
+        path: image.path,
+        imageMean: 127.5,
+        imageStd: 127.5,
+        threshold: 0.1,
+        numResults: 2,
+      );
+
+      if (recognitions != null) {
+        setState(() {
+          // Clear previous output
+          output = '';
+
+          // Debug: Print the recognitions list
+          print("Recognitions: $recognitions");
+
+          // Check for the highest confidence label
+          if (recognitions.isNotEmpty) {
+            double highestConfidence =
+                recognitions[0]['confidence'] * 100; // Convert to percentage
+            String highestLabel = recognitions[0]['label'];
+            output +=
+                "$highestLabel - ${highestConfidence.toStringAsFixed(2)}%";
+
+            // If the highest confidence is less than 100%, show the next possible label
+            if (highestConfidence < 100 && recognitions.length > 1) {
+              double nextConfidence = recognitions[1]['confidence'] * 100;
+              String nextLabel = recognitions[1]['label'];
+              output +=
+                  "\nNext Possible: $nextLabel - ${nextConfidence.toStringAsFixed(2)}%";
+            } else {
+              output += "\nNo next possible identification available.";
+            }
+          }
+        });
+      }
+    } catch (e) {
+      print("Error classifying image: $e");
+    } finally {
+      setState(() {
+        _isBusy = false; // Reset the busy flag
+      });
+    }
   }
 
   @override
@@ -96,27 +105,36 @@ class _IdentifyState extends State<Identify> {
         children: [
           Padding(
             padding: const EdgeInsets.all(20),
-            child: Container(
-                height: MediaQuery.of(context).size.height * 0.7,
-                width: MediaQuery.of(context).size.width,
-                //check if camera controller is initialize,
-                child: !cameraController!.value.isInitialized
-                    ? Container()
-                    : AspectRatio(
-                        aspectRatio: cameraController!.value.aspectRatio,
-                        child: CameraPreview(cameraController!),
-                      )),
+            child: imagePath != null
+                ? Image.file(File(imagePath!))
+                : Container(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.grey[300],
+                    child: const Center(child: Text('No image selected.')),
+                  ),
           ),
           Text(
-            output,
+            output.isNotEmpty ? output : "No result yet",
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.black,
               fontSize: 20,
             ),
-          )
+          ),
+          const SizedBox(height: 20), // Add some space before the button
+          ElevatedButton(
+            onPressed: _isBusy ? null : openGallery, // Disable button if busy
+            child: const Text('Select Image from Gallery'),
+          ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    Tflite.close();
+    super.dispose();
   }
 }

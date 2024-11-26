@@ -1,6 +1,11 @@
-0 Alpinia sp
-1 Etlingera pilosa 
-2 Etlingera dostseiana
-3 Adelmeria alpinea
-4 Alpinia apoensis
-5 No Ginger Detected
+0 Adelmeria Alpina
+1 Alpinia Apoensis
+2 Alpinia Haenkei
+3 Alpinia Musifolia
+4 Alpinia Purpurata
+5 Curcuma Caesia
+6 Etlingera Dostseiana
+7 Etlingera Pilosa
+8 Hornstedtia Lophophora
+9 Zingiber Zerumbet
+10 Unidentified Specie

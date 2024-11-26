@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:zingexpo/location/metadata.dart';
+import 'package:zingexpo/sample/sam.dart';
 import 'package:zingexpo/sample/species_library.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/trial.dart';
 import 'package:zingexpo/screens/add_ginger/display_gingers.dart';
 import 'package:zingexpo/screens/add_quadrats.dart';
 import 'package:zingexpo/screens/home.dart';
+import 'package:zingexpo/screens/identify/identify_camera.dart';
+import 'package:zingexpo/screens/meta_data_related/trial.dart';
 import 'package:zingexpo/screens/splashscreen.dart';
 
 void main() {
@@ -18,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      home: Home(),
       theme: ThemeData(
         fontFamily: 'Poppins',
         primaryTextTheme: const TextTheme(

@@ -1,8 +1,8 @@
 // import 'dart:io';
 
 // import 'package:flutter/material.dart';
-// import 'package:flutter_tflite/flutter_tflite.dart';
 // import 'package:image_picker/image_picker.dart';
+// import 'package:tflite/tflite.dart';
 
 // class RealtimeCamScreen extends StatefulWidget {
 //   @override
@@ -132,10 +132,20 @@
 //   }
 // }
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
-import 'package:image/image.dart' as img; // For image processing
+import 'package:tflite/tflite.dart';
+
+final ImagePicker _picker = ImagePicker();
+
+Future<void> loadModel() async {
+  String? res = await Tflite.loadModel(
+    model: "assets/model.tflite",
+    labels: "assets/labels.txt",
+  );
+  print("Model loaded: $res");
+}
 
 class RealtimeCamScreen extends StatefulWidget {
   @override
@@ -143,110 +153,155 @@ class RealtimeCamScreen extends StatefulWidget {
 }
 
 class _RealtimeCamScreenState extends State<RealtimeCamScreen> {
-  late Interpreter _interpreter;
-  String _result = "No result yet";
-  File? _image;
+  String? _imagePath;
+  String _resultText = "No result yet";
 
   @override
   void initState() {
     super.initState();
-    _loadModel();
+    loadModel();
   }
 
-  Future<void> _loadModel() async {
+  // Future<void> runModelOnImage(String imagePath) async {
+  //   var recognitions = await Tflite.runModelOnImage(
+  //     path: imagePath,
+  //     imageMean: 127.5,
+  //     imageStd: 127.5,
+  //     threshold: 0.4,
+  //     asynch: true,
+  //   );
+
+  //   String result = "No result";
+  //   if (recognitions != null && recognitions.isNotEmpty) {
+  //     result = recognitions.map((recog) {
+  //       return "${recog['detectedClass']} - ${recog['confidence'].toStringAsFixed(2)}";
+  //     }).join("\n");
+  //   }
+
+  //   setState(() {
+  //     _resultText = result;
+  //   });
+  // }
+  @override
+  void dispose() {
+    Tflite.close(); // Dispose of the model
+    super.dispose();
+  }
+
+  bool _isProcessing = false; // Add this flag
+
+  Future<void> runModelOnImage(String imagePath) async {
+    if (_isProcessing) {
+      print("Model is already processing another image.");
+      return;
+    }
+
+    _isProcessing = true; // Set to true to block new requests
+
     try {
-      _interpreter = await Interpreter.fromAsset('model.tflite');
-    } catch (e) {
-      print("Error loading model: $e");
-    }
-    // _interpreter = await Interpreter.fromAsset('model.tflite');
-  }
+      var recognitions = await Tflite.runModelOnImage(
+        path: imagePath,
+        imageMean: 127.5,
+        imageStd: 127.5,
+        threshold: 0.4,
+        asynch: true,
+      );
 
-  Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().getImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-      _classifyImage(_image!);
-    }
-  }
-
-  Future<void> _classifyImage(File image) async {
-    // Load labels
-    final labels = await _loadLabels('assets/labels.txt');
-
-    // Preprocess the image
-    var inputImage = _preprocessImage(image);
-
-    // Create a buffer for the output
-    var output = List.filled(labels.length, 0.0).reshape([1, labels.length]);
-
-    // Run inference
-    _interpreter.run(inputImage, output);
-
-    // Get the result
-    var resultIndex =
-        output[0].indexOf(output[0].reduce((a, b) => a > b ? a : b));
-
-    // Check if the result is below a certain threshold or not in the labels
-    if (output[0][resultIndex] < 0.5) {
-      // Adjust threshold as needed
-      setState(() {
-        _result = "Unidentified Ginger";
-      });
-    } else {
-      setState(() {
-        _result = labels[resultIndex];
-      });
-    }
-  }
-
-  Future<List<String>> _loadLabels(String path) async {
-    final labelsFile = await File(path).readAsString();
-    return labelsFile.split('\n');
-  }
-
-  List<List<double>> _preprocessImage(File image) {
-    // Load the image and resize it to the required input size
-    img.Image originalImage = img.decodeImage(image.readAsBytesSync())!;
-    img.Image resizedImage = img.copyResize(originalImage,
-        width: 224, height: 224); // Adjust size as needed
-
-    // Normalize the image data
-    List<double> input = [];
-    for (int y = 0; y < resizedImage.height; y++) {
-      for (int x = 0; x < resizedImage.width; x++) {
-        var pixel = resizedImage.getPixel(x, y);
-        input.add((img.getRed(pixel) - 127.5) / 127.5); // Normalize to [-1, 1]
-        input.add((img.getGreen(pixel) - 127.5) / 127.5);
-        input.add((img.getBlue(pixel) - 127.5) / 127.5);
+      String result = "No result";
+      if (recognitions != null && recognitions.isNotEmpty) {
+        result = recognitions.map((recog) {
+          return "${recog['detectedClass']} - ${recog['confidence'].toStringAsFixed(2)}";
+        }).join("\n");
       }
-    }
 
-    // Reshape input to match model input shape
-    return [input]; // Return as a list of lists
+      setState(() {
+        _resultText = result;
+      });
+    } catch (e) {
+      print("Error running model: $e");
+      setState(() {
+        _resultText = "Failed to process image.";
+      });
+    } finally {
+      _isProcessing = false; // Reset the flag when done
+    }
+  }
+
+  // Future<void> runModelOnImage(String imagePath) async {
+  //   try {
+  //     var recognitions = await Tflite.runModelOnImage(
+  //       path: imagePath,
+  //       imageMean: 127.5,
+  //       imageStd: 127.5,
+  //       threshold: 0.4,
+  //       asynch: true,
+  //     );
+
+  //     String result = "No result";
+  //     if (recognitions != null && recognitions.isNotEmpty) {
+  //       result = recognitions.map((recog) {
+  //         return "${recog['detectedClass']} - ${recog['confidence'].toStringAsFixed(2)}";
+  //       }).join("\n");
+  //     }
+
+  //     setState(() {
+  //       _resultText = result;
+  //     });
+  //   } catch (e) {
+  //     print("Error running model: $e");
+  //     setState(() {
+  //       _resultText = "Failed to process image.";
+  //     });
+  //   }
+  // }
+
+  Future<void> openGallery() async {
+    XFile? picture = await _picker.pickImage(source: ImageSource.gallery);
+    if (picture != null) {
+      setState(() {
+        _imagePath = picture.path;
+        _resultText = "Processing...";
+      });
+      await runModelOnImage(picture.path);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Image Classifier'),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text('Ginger Flower Identifier')),
+        body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _image == null ? Text('No image selected.') : Image.file(_image!),
-              SizedBox(height: 20),
-              Text('Result: $_result'),
-              SizedBox(height: 20),
+              _imagePath != null
+                  ? Image.file(
+                      File(_imagePath!),
+                      height: 300,
+                      width: 300,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(
+                      height: 300,
+                      width: 300,
+                      color: Colors.grey[200],
+                      child: Icon(
+                        Icons.image,
+                        size: 100,
+                        color: Colors.grey[400],
+                      ),
+                    ),
+              const SizedBox(height: 20),
+              Text(
+                _resultText,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _pickImage,
-                child: Text('Pick Image from Gallery'),
+                onPressed: openGallery,
+                child: Text('Select Image from Gallery'),
               ),
             ],
           ),

@@ -419,6 +419,11 @@ VALUES
     return await db.query("image_meta_data");
   }
 
+  Future<int> insertImageData(Map<String, dynamic> imageData) async {
+    final db = await database;
+    return await db.insert('image_meta_data', imageData);
+  }
+
   Future<List<Map<String, Object?>>> readData() async {
     final db = await database;
     return await db.query("Projects");
@@ -508,6 +513,36 @@ VALUES
     }
   }
 
+  Future<List<Map<String, Object?>>> getIdentifiedSpeciesByQuadrat(
+      int projectId) async {
+    try {
+      final db = await database;
+      // Query to get quadrats where the project_id matches the current project
+      final results = await db.query("image_meta_data",
+          where: "project_id = ?", whereArgs: [projectId]);
+      // print('Quadrats query results: $results');
+      return results;
+    } catch (e) {
+      print('Error querying Species: $e');
+      return [];
+    }
+  }
+
+//  Future<List<Map<String, Object?>>> getIdentifiedSpeciesByQuadrat(
+//       int quadratID, int projectId) async {
+//     try {
+//       final db = await database;
+//       // Query to get quadrats where the project_id matches the current project
+//       final results = await db.query("image_meta_data",
+//           where: "project_id = ? AND quadrat_id = ?",
+//           whereArgs: [projectId, quadratID]);
+//       // print('Quadrats query results: $results');
+//       return results;
+//     } catch (e) {
+//       print('Error querying quadrats: $e');
+//       return [];
+//     }
+//   }
   //get all gingers from quadrats
   Future<List<Map<String, Object?>>> getGingersFromQuadrats(
       int quadratID) async {
@@ -539,6 +574,41 @@ VALUES
 
     await db
         .delete('Projects', where: 'project_id = ?', whereArgs: [projectid]);
+  }
+
+  Future<void> saveIdentifiedSpecie({
+    required String speciesName,
+    required String? imagePath,
+    required double latitude,
+    required double longitude,
+    required int projectID,
+    required int quadratID,
+  }) async {
+    final db = await database;
+
+    try {
+      await db.insert("idetified_species", {
+        "species_collected_id": null, // Assuming you have a way to set this
+        "species_id": null, // Assuming you have a way to set this
+        // Add other fields as necessary
+      });
+
+      // Save the image metadata in the image_meta_data table
+      await db.insert("image_meta_data", {
+        "image_name": speciesName,
+        "image_path": imagePath,
+        "latitude": latitude.toString(),
+        "longitude": longitude.toString(),
+        "elevation": null, // Add if you have elevation data
+        "project_id": projectID, // Add if you have a project ID
+        "quadrat_id": quadratID, // Add if you have a quadrat ID
+        "capture_date": DateTime.now().toIso8601String(), // Capture date
+      });
+
+      print('Identified species saved successfully!');
+    } catch (e) {
+      print('Error saving identified species: $e');
+    }
   }
 
   Future addSpecies(

@@ -192,8 +192,12 @@ class _AddQuadratState extends State<AddQuadrat> {
                   quadrat_description: descriptionController.text,
                   imageFile: _selectedImage,
                   projectID: widget.projectID);
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text('Quadrat saved')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text(
+                  'Quadrat saved',
+                ),
+                backgroundColor: Color.fromARGB(255, 136, 2, 47),
+              ));
             }
             widget.onAdd();
 

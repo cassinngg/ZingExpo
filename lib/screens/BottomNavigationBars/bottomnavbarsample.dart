@@ -14,7 +14,10 @@ import 'package:zingexpo/screens/BottomNavigationBars/share_quadrat.dart';
 import 'package:zingexpo/screens/add_quadrats.dart';
 import 'package:zingexpo/screens/edit_screens/edit_project.dart';
 import 'package:zingexpo/screens/home.dart';
+import 'package:zingexpo/screens/identify/identify_camera.dart';
+import 'package:zingexpo/screens/shannon/shannon.dart';
 import 'package:zingexpo/widgets/card_quadrat.dart';
+import 'package:zingexpo/widgets/circular_plant.dart';
 import 'package:zingexpo/widgets/heading_page.dart';
 // import 'package:lanarsnavbarflutter/theme/app_theme.dart';
 // import 'package:lanarsnavbarflutter/theme/custom_colors_theme.dart';
@@ -193,6 +196,10 @@ class _FloatingSampleState extends State<FloatingSample>
                 const PhosphorIcon(PhosphorIconsBold.dotsThreeOutlineVertical),
             itemBuilder: (context) => [
               const PopupMenuItem(
+                value: 'shannonindex',
+                child: Text('Calculate Shannon Index'),
+              ),
+              const PopupMenuItem(
                 value: 'shareproject',
                 child: Text('Share Project'),
               ),
@@ -300,13 +307,22 @@ class _FloatingSampleState extends State<FloatingSample>
                 //         builder: (context) => ShareQuadrat(
                 //               projectID: widget.projectID,
                 //             )));
+              } else if (value == 'shannonindex') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ShannonIndexCalculator(
+                      projectId: widget.projectID,
+                    ),
+                  ),
+                );
               }
             },
           )
         ],
         iconTheme: const IconThemeData(color: Colors.black),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(50.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -345,7 +361,7 @@ class _FloatingSampleState extends State<FloatingSample>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // body[_currentIndex],
-                  SizedBox(height: 13),
+                  const SizedBox(height: 13),
                   Container(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -357,22 +373,23 @@ class _FloatingSampleState extends State<FloatingSample>
                     ),
                   ),
 
-                  // SingleChildScrollView(
-                  //   scrollDirection: Axis.horizontal,
-                  //   child: Row(
-                  //     children: allData.map((info) {
-                  //       return CircularPlant(
-                  //         title: info['genus_name'] ??
-                  //             'Unknown Genus', // Default value if 'genus_name' is missing
-                  //         imageUrl: info['imageUrl'] ?? '',
-                  //         plantId: info['plantId'] ?? '',
-
-                  //         // Default empty string if 'i,mageUrl' is missing
-                  //       );
-                  //     }).toList(),
-                  //   ),
-                  // ),
-                  SizedBox(height: 18),
+                  SizedBox(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(quadratData.length, (index) {
+                          // return Text("wtf");
+                          // Ensure you have 'quadratData' defined in your context
+                          return CircleInfoPage(
+                            projectId:
+                                widget.projectID, // Ensure consistent naming
+                            allData: widget.allData,
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
                   Text(
                     "Quadrats",
                     style: GoogleFonts.poppins(
@@ -384,7 +401,7 @@ class _FloatingSampleState extends State<FloatingSample>
                   quadratData.isNotEmpty
                       ? GridView.builder(
                           shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: quadratData.length,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
@@ -420,7 +437,7 @@ class _FloatingSampleState extends State<FloatingSample>
         itemCount: iconList.length,
         tabBuilder: (int index, bool isActive) {
           final color =
-              isActive ? Color.fromARGB(255, 18, 155, 23) : Colors.white;
+              isActive ? const Color.fromARGB(255, 18, 155, 23) : Colors.white;
 
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -456,10 +473,10 @@ class _FloatingSampleState extends State<FloatingSample>
                           );
                           break;
                         case 2:
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => RealtimeCamScreen()),
-                          );
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //       builder: (context) => ImageIdentify()),
+                          // );
                           break;
                         case 3:
                           Navigator.of(context).push(
@@ -493,11 +510,11 @@ class _FloatingSampleState extends State<FloatingSample>
         // rightCornerRadius: 32,
         onTap: (index) => setState(() => _bottomNavIndex = index),
         hideAnimationController: _hideBottomBarAnimationController,
-        shadow: BoxShadow(
+        shadow: const BoxShadow(
           offset: Offset(0, 1),
           blurRadius: 12,
           spreadRadius: 0.5,
-          color: const Color.fromARGB(255, 8, 82, 10),
+          color: Color.fromARGB(255, 8, 82, 10),
         ),
       ),
     );
@@ -545,7 +562,7 @@ class _NavigationScreenState extends State<NavigationScreen>
   void initState() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000),
     );
     animation = CurvedAnimation(
       parent: _controller,
@@ -558,7 +575,7 @@ class _NavigationScreenState extends State<NavigationScreen>
   _startAnimation() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000),
     );
     animation = CurvedAnimation(
       parent: _controller,
@@ -580,11 +597,11 @@ class _NavigationScreenState extends State<NavigationScreen>
       color: Theme.of(context).colorScheme.background,
       child: ListView(
         children: [
-          SizedBox(height: 64),
+          const SizedBox(height: 64),
           Center(
             child: CircularRevealAnimation(
               animation: animation,
-              centerOffset: Offset(80, 80),
+              centerOffset: const Offset(80, 80),
               maxRadius: MediaQuery.of(context).size.longestSide * 1.1,
               child: Icon(
                 widget.iconData,
