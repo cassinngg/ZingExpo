@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:zingexpo/widgets/card_quadrat.dart';
+import 'package:zingexpo/widgets/specific_project/card_quadrat.dart';
 import 'package:zingexpo/widgets/heading_page.dart';
 
 class SpecificProject extends StatefulWidget {
@@ -90,21 +89,25 @@ class _SpecificProjectState extends State<SpecificProject> {
               const SizedBox(height: 10),
               Container(
                 alignment: Alignment.centerLeft,
-                child: Text(
+                child: const Text(
                   "Identified Ginger",
-                  style: GoogleFonts.poppins(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
-              Text(
+              const Text(
                 "Quadrats",
-                style: GoogleFonts.poppins(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
               ),
               const SizedBox(height: 10),
               GridView.builder(

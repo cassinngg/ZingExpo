@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/screens/project_page.dart';
 
@@ -9,12 +8,11 @@ class OpenProjects extends StatelessWidget {
   final int projectID;
 
   // final int index;
-  const OpenProjects({super.key, required this.allData, required this.projectID});
+  const OpenProjects(
+      {super.key, required this.allData, required this.projectID});
 
   @override
   Widget build(BuildContext context) {
-    // Get the specific project based on index
-
     return Material(
       child: InkWell(
         onTap: () {
@@ -55,13 +53,13 @@ class OpenProjects extends StatelessWidget {
                                 fit: BoxFit.cover,
                               )
                             : Center(
-                              child: Image.asset(
-                                "assets/zingiber_zerumbet.jpg",
-                                width: 500,
-                                height: 130,
-                                fit: BoxFit.cover,
+                                child: Image.asset(
+                                  "assets/zingiber_zerumbet.jpg",
+                                  width: 500,
+                                  height: 130,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ),
                       ),
                     ),
                     Positioned(
@@ -81,8 +79,7 @@ class OpenProjects extends StatelessWidget {
                           },
                           icon: const PhosphorIcon(
                             PhosphorIconsDuotone.cameraPlus,
-                            color: Color.fromARGB(
-                                255, 255, 255, 255), // White color
+                            color: Color.fromARGB(255, 255, 255, 255),
                             size: 40,
                           ),
                         ),
@@ -98,7 +95,8 @@ class OpenProjects extends StatelessWidget {
                           children: [
                             Text(
                               allData['project_name'] ?? 'N/A',
-                              style: GoogleFonts.poppins(
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
                                 fontSize: 14,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700,
@@ -112,36 +110,33 @@ class OpenProjects extends StatelessWidget {
                               children: [
                                 const PhosphorIcon(
                                   PhosphorIconsRegular.flowerLotus,
-                                  color: Color.fromARGB(
-                                      255, 255, 255, 255), // White color
+                                  color: Color.fromARGB(255, 255, 255, 255),
                                   size: 25,
                                 ),
-                                const SizedBox(width: 5), // Add space between icons
+                                const SizedBox(width: 5),
                                 Text(
                                   allData['project_description'] ?? 'N/A',
-                                  style: GoogleFonts.poppins(
+                                  style: const TextStyle(
+                                    fontFamily: 'Poppins',
                                     fontSize: 9,
                                     color: Colors.white,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(
-                                width: 10), // Add space between icons
-                            Row(
+                            const SizedBox(width: 10),
+                            const Row(
                               children: [
-                                const PhosphorIcon(
+                                PhosphorIcon(
                                   PhosphorIconsRegular.camera,
-                                  color: Color.fromARGB(
-                                      255, 255, 255, 255), // White color
+                                  color: Color.fromARGB(255, 255, 255, 255),
                                   size: 20,
                                 ),
-
-                                const SizedBox(
-                                    width: 10), // Add space between icons
+                                SizedBox(width: 10),
                                 Text(
                                   "20",
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
                                     fontSize: 9,
                                     color: Colors.white,
                                   ),

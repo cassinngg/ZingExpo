@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class HeadingText extends StatelessWidget {
@@ -21,7 +20,8 @@ class HeadingText extends StatelessWidget {
         children: [
           Text(
             title,
-            style: GoogleFonts.poppins(
+            style: const TextStyle(
+              fontFamily: 'Poppins',
               fontSize: 19,
               color: Colors.black,
               fontWeight: FontWeight.w700,
@@ -40,7 +40,8 @@ class HeadingText extends StatelessWidget {
               ),
               Text(
                 description,
-                style: GoogleFonts.poppins(
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF023C0E),

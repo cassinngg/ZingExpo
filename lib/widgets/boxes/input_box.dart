@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class InputBox extends StatefulWidget {
   final String hint;
@@ -56,7 +55,8 @@ class _InputBoxState extends State<InputBox> {
             controller: widget.controller,
             decoration: InputDecoration(
               hintText: widget.hint,
-              hintStyle: GoogleFonts.poppins(
+              hintStyle: TextStyle(
+                fontFamily: 'Poppins',
                 fontSize: hintFontSize,
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF097500),
@@ -71,7 +71,8 @@ class _InputBoxState extends State<InputBox> {
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
             ),
-            style: GoogleFonts.poppins(
+            style: TextStyle(
+              fontFamily: 'Poppins',
               fontSize: textFieldFontSize,
               fontWeight: FontWeight.w200,
               color: const Color(0xFF097500),

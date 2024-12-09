@@ -3,22 +3,16 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:zingexpo/screens/BottomNavigationBars/bottomnavbarsample.dart';
 
 Future<Position> _determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
 
-  // Test if location services are enabled.
   serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
-    // Location services are not enabled don't continue
-    // accessing the position and request users of the
-    // App to enable the location services.
     return Future.error('Location services are disabled.');
   }
 
@@ -26,27 +20,18 @@ Future<Position> _determinePosition() async {
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
-      // Permissions are denied, next time you could try
-      // requesting permissions again (this is also where
-      // Android's shouldShowRequestPermissionRationale
-      // returned true. According to Android guidelines
-      // your App should show an explanatory UI now.
       return Future.error('Location permissions are denied');
     }
   }
 
   if (permission == LocationPermission.deniedForever) {
-    // Permissions are denied forever, handle appropriately.
     return Future.error(
         'Location permissions are permanently denied, we cannot request permissions.');
   }
 
-  // When we reach here, permissions are granted and we can
-  // continue accessing the position of the device.
   return await Geolocator.getCurrentPosition();
 }
 
-//global var for easy integration data with UI
 List alldatalist = [];
 Database? _database;
 
@@ -64,7 +49,6 @@ class LocalDatabase {
   }
 
   Future _createDB(Database db, int version) async {
-    // Projects
     await db.execute('''
   CREATE TABLE Projects(
   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -82,7 +66,7 @@ class LocalDatabase {
   ginger_id INTEGER PRIMARY KEY AUTOINCREMENT,
   ginger_name TEXT,
   ginger_description TEXT,
-  ginger_image BLOB,
+  ginger_image TEXT,
   species_id INTEGER,
   FOREIGN KEY (species_id) REFERENCES Species (id)
   );
@@ -93,8 +77,10 @@ class LocalDatabase {
   quadrat_name TEXT NOT NULL,
   elevation TEXT,
   longitude TEXT,
+  length TEXT,
+  width TEXT,
   latitude TEXT,
-  quadrat_description TEXT,
+  quadrat_size TEXT,
   quadrat_image BLOB,
   project_id INTEGER,
   FOREIGN KEY (project_id) REFERENCES Projects(project_id)
@@ -104,7 +90,8 @@ class LocalDatabase {
   CREATE TABLE image_meta_data(
   img_data INTEGER PRIMARY KEY AUTOINCREMENT,
   image_name TEXT NOT NULL,
-  image_path TEXT,
+  additional_details TEXT,
+  image_path BLOB,
   latitude TEXT,
   longitude TEXT,
   elevation TEXT,
@@ -237,15 +224,16 @@ class LocalDatabase {
   );
   ''');
 
-    await db.execute('''INSERT INTO Gingers (ginger_name, ginger_description)
+    await db.execute(
+        '''INSERT INTO Gingers (ginger_name, ginger_description, ginger_image)
 VALUES 
-('Alpinia Haenkei', 'Alpinia is a genus of flowering plants in the ginger family, Zingiberaceae. Species are native to Asia, Australia, and the Pacific Islands, where they occur in tropical and subtropical climates. This Philippine endemic species grows in low and medium elevation forests, typically reaching heights of 1-3 meters. Its pseudostems are composed of overlapping leaf sheaths, forming a distinctive architectural feature.'),
-('Adelmeria Alpina', 'As an endemic species to the Philippines, Adelmeria alpina is relatively understudied. Limited information suggests it may inhabit tropical forests, but further research is needed to confirm its ecological characteristics. Adelmeria is a genus of perennial herbs in the family Zingiberaceae which are endemic to the Philippines. Previously, Adelmeria had been considered a synonym of the genus Alpinia, however, after a study showed Alpina to be highly polyphyletic, it was determined in 2019 that Adelmeria was a distinct genus.'),
-('Hornstedtia lophophora', 'The native range of this species is Philippines (Negros, Mindanao). It is a rhizomatous geophyte and grows primarily in the wet tropical biome. While its exact distribution is unclear, Hornstedtia lophophora is believed to originate from Southeast Asian regions. It likely thrives in humid environments typical of tropical rainforests.'),
-('Alpinia musifolia', 'Native to the Philippines, this species inhabits low and medium elevation forests. Its growth habit and specific characteristics remain somewhat obscure due to limited documentation.'),
-('Etlingera dostseiana', 'Unique among the Philippine Etlingera due to having an ovoid spike, papery bracts when fruiting, and stilt roots. It prefers warm, humid climates similar to other members of the Zingiberaceae family.'),
-('Etlingera Pilosa', 'A Southeast Asian native, Etlingera pilosa appears to thrive in tropical environments. However, specific details about its habitat preferences and growth patterns are lacking. The native range of this species is Philippines (Negros). It is a rhizomatous geophyte and grows primarily in the wet tropical biome.'),
-('Alpinia apoensis', 'The native range of this species is Philippines (Catanduanes, Mindanao). It is a rhizomatous geophyte and grows primarily in the wet tropical biome. It is an endemic Zingiberaceae species of uncertain identity that was first collected and described by Elmer over 90 years ago. This Philippine endemic species is known to inhabit mountainous regions. Its adaptations to high-altitude environments and unique characteristics remain areas for further study.');
+('Alpinia Haenkei', 'Alpinia is a genus of flowering plants in the ginger family, Zingiberaceae. Species are native to Asia, Australia, and the Pacific Islands, where they occur in tropical and subtropical climates. This Philippine endemic species grows in low and medium elevation forests, typically reaching heights of 1-3 meters. Its pseudostems are composed of overlapping leaf sheaths, forming a distinctive architectural feature.', 'assets/species_image/Alpinia_haenkei.jpg'),
+('Adelmeria Alpina', 'As an endemic species to the Philippines, Adelmeria alpina is relatively understudied. Limited information suggests it may inhabit tropical forests, but further research is needed to confirm its ecological characteristics. Adelmeria is a genus of perennial herbs in the family Zingiberaceae which are endemic to the Philippines. Previously, Adelmeria had been considered a synonym of the genus Alpinia, however, after a study showed Alpina to be highly polyphyletic, it was determined in 2019 that Adelmeria was a distinct genus.', 'assets/species_image/Adelmeria_alpina.jpg'),
+('Hornstedtia lophophora', 'The native range of this species is Philippines (Negros, Mindanao). It is a rhizomatous geophyte and grows primarily in the wet tropical biome. While its exact distribution is unclear, Hornstedtia lophophora is believed to originate from Southeast Asian regions. It likely thrives in humid environments typical of tropical rainforests.', 'assets/species_image/Hornstedtia_lophophora.jpg'),
+('Alpinia musifolia', 'Native to the Philippines, this species inhabits low and medium elevation forests. Its growth habit and specific characteristics remain somewhat obscure due to limited documentation.', 'assets/species_image/Alpinia_musifolia.jpg'),
+('Etlingera dostseiana', 'Unique among the Philippine Etlingera due to having an ovoid spike, papery bracts when fruiting, and stilt roots. It prefers warm, humid climates similar to other members of the Zingiberaceae family.', 'assets/species_image/Etlingera-dostseiana.jpg'),
+('Etlingera Pilosa', 'A Southeast Asian native, Etlingera pilosa appears to thrive in tropical environments. However, specific details about its habitat preferences and growth patterns are lacking. The native range of this species is Philippines (Negros). It is a rhizomatous geophyte and grows primarily in the wet tropical biome.', 'assets/species_image/Etlingera _pilosa.jpg'),
+('Alpinia apoensis', 'The native range of this species is Philippines (Catanduanes, Mindanao). It is a rhizomatous geophyte and grows primarily in the wet tropical biome. It is an endemic Zingiberaceae species of uncertain identity that was first collected and described by Elmer over 90 years ago. This Philippine endemic species is known to inhabit mountainous regions. Its adaptations to high-altitude environments and unique characteristics remain areas for further study.', 'assets/species_image/Alpinia_apoensis.jpg');
 ''');
   }
 
@@ -301,9 +289,9 @@ VALUES
 
 //function for adding projects
   Future addProject(
-      {required String project_name,
-      required String project_description,
-      required String project_location,
+      {required String projectName,
+      required String projectDescription,
+      required String projectLocation,
       File? imageFile}) async {
     final db = await database;
 
@@ -316,9 +304,9 @@ VALUES
       final DateTime now = DateTime.now();
       await db.insert("Projects", {
         "project_id": null,
-        "project_name": project_name,
-        "project_description": project_description,
-        "project_location": project_location,
+        "project_name": projectName,
+        "project_description": projectDescription,
+        "project_location": projectLocation,
         "start_date": now.toString(),
         "project_image": imageBytes,
       });
@@ -372,8 +360,10 @@ VALUES
   }
 
   Future addQuadrats(
-      {required String quadrat_name,
-      required String quadrat_description,
+      {required String quadratName,
+      required String quadratDescription,
+      required String length,
+      required String width,
       required int projectID,
       File? imageFile}) async {
     final db = await database;
@@ -400,8 +390,10 @@ VALUES
     try {
       await db.insert("Quadrats", {
         "quadrat_id": null,
-        "quadrat_name": quadrat_name,
-        "quadrat_description": quadrat_description,
+        "quadrat_name": quadratName,
+        "quadrat_size": quadratDescription,
+        "length": length,
+        "width": width,
         "latitude": lat,
         "longitude": long,
         "quadrat_image": imageBytes,
@@ -412,6 +404,11 @@ VALUES
     } catch (e) {
       print('Error inserting quadrat: $e');
     }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchGingers() async {
+    final db = await database;
+    return await db.qury("Gingers");
   }
 
   Future<List<Map<String, Object?>>> readDataImages() async {
@@ -487,14 +484,12 @@ VALUES
 //   Future<List<Map<String, Object?>>> getQuadratsByProjectID(
 //       int projectID) async {
 //     final db = await database;
-//     // Query to get quadrats where the project_id matches the current project
 //     return await db.query(
 //       "Quadrats",
 //       where: "project_id = ?",
 //       whereArgs: [projectID],
 //     );
 //   }
-//get all quadrats from project
   Future<List<Map<String, Object?>>> getQuadratsByProjectID(
       int projectID) async {
     try {
@@ -510,6 +505,55 @@ VALUES
     } catch (e) {
       print('Error querying quadrats: $e');
       return [];
+    }
+  }
+
+  Future<List<Map<String, Object?>>> getProjects(int projectID) async {
+    try {
+      final db = await database;
+      // Query to get quadrats where the project_id matches the current project
+      final results = await db.query(
+        "Projects",
+        where: "project_id = ?",
+        whereArgs: [projectID],
+      );
+      // print('Quadrats query results: $results');
+      return results;
+    } catch (e) {
+      print('Error querying projects: $e');
+      return [];
+    }
+  }
+
+  Future<void> updateQuadrat({
+    required int quadratID,
+    required String quadratName,
+    required String length,
+    required String width,
+    File? imageFile,
+  }) async {
+    final db = await database;
+
+    Uint8List? imageBytes;
+    if (imageFile != null) {
+      imageBytes = await imageFile.readAsBytes();
+    }
+
+    try {
+      await db.update(
+        "Quadrats",
+        {
+          "quadrat_name": quadratName,
+          "length": length,
+          "width": width,
+          "quadrat_image": imageBytes,
+        },
+        where: "quadrat_id = ?",
+        whereArgs: [quadratID],
+      );
+      print('Quadrat updated successfully!');
+    } catch (e) {
+      print('Error updating quadrat: $e');
     }
   }
 
@@ -548,7 +592,6 @@ VALUES
       int quadratID) async {
     try {
       final db = await database;
-      // Query to get specified_quadrat_mapping where the quadrat_id matches the current quadrat
       final results = await db.query(
         "specied_quadrat_mapping",
         where: "quadrat_id = ?",
@@ -578,6 +621,7 @@ VALUES
 
   Future<void> saveIdentifiedSpecie({
     required String speciesName,
+    required String additionalDetails,
     required String? imagePath,
     required double latitude,
     required double longitude,
@@ -588,14 +632,14 @@ VALUES
 
     try {
       await db.insert("idetified_species", {
-        "species_collected_id": null, // Assuming you have a way to set this
-        "species_id": null, // Assuming you have a way to set this
-        // Add other fields as necessary
+        "species_collected_id": null,
+        "species_id": null,
       });
 
       // Save the image metadata in the image_meta_data table
       await db.insert("image_meta_data", {
         "image_name": speciesName,
+        "additional_details": additionalDetails,
         "image_path": imagePath,
         "latitude": latitude.toString(),
         "longitude": longitude.toString(),
@@ -648,27 +692,110 @@ VALUES
     return results;
   }
 
+  Future<void> updateProject({
+    required int projectID,
+    required String projectName,
+    required String projectDescription,
+    required String projectLocation,
+    File? imageFile,
+  }) async {
+    final db = await database;
+
+    Uint8List? imageBytes;
+    if (imageFile != null) {
+      imageBytes = await imageFile.readAsBytes();
+    }
+
+    try {
+      await db.update(
+        "Projects",
+        {
+          "project_name": projectName,
+          "project_description": projectDescription,
+          "project_location": projectLocation,
+          "project_image": imageBytes,
+        },
+        where: "project_id = ?",
+        whereArgs: [projectID],
+      );
+      print('Project updated successfully!');
+    } catch (e) {
+      print('Error updating project: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchQuadratsByProjectID(
+      int projectID) async {
+    final db = await database;
+    final List<Map<String, dynamic>> quadrats = await db.query(
+      'Quadrats',
+      where: 'project_id = ?',
+      whereArgs: [projectID],
+    );
+    return quadrats;
+    // return List.generate(maps.length, (i) {
+    //   return maps[i]['quadrat_name'] as String;
+    // });
+  }
+
+  Future<String?> getProjectNameByID(int projectID) async {
+    final db = await database;
+    final List<Map<String, dynamic>> results = await db.query(
+      'Projects',
+      where: 'project_id = ?',
+      whereArgs: [projectID],
+    );
+
+    if (results.isNotEmpty) {
+      return results.first['project_name'] as String;
+    }
+    return null;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchProjectsWithIds() async {
+    final db = await database;
+    return await db.query('Projects', columns: ['project_id', 'project_name']);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchQuadratsWithIds() async {
+    final db = await database;
+    return await db.query('Quadrats', columns: ['quadrat_id', 'quadrat_name']);
+  }
+
+  Future<List<String>> fetchProjects() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('Projects');
+
+    return List.generate(maps.length, (i) {
+      return maps[i]['project_name'] as String;
+    });
+  }
+
+  Future<List<String>> fetchQuadrats() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('Quadrats');
+
+    return List.generate(maps.length, (i) {
+      return maps[i]['quadrat_name'] as String;
+    });
+  }
+
   Future<List<String>> getImagesForQuadrat(int projectId) async {
-    // Replace with your actual database query logic
     List<String> imagePaths = [];
 
-    // Example query to fetch image paths for the given quadrat ID
-    final db =
-        await database; // Assuming you have a method to get the database instance
+    final db = await database;
     // final List<Map<String, dynamic>> maps = await db.query(
-    //   'images', // Replace with your actual images table name
-    //   where: 'quadrat_id = ?', // Assuming you have a foreign key relationship
+    //   'images', /
+    //   where: 'quadrat_id = ?',
     //   whereArgs: [quadratId],
     // );
     final List<Map<String, dynamic>> maps = await db.query(
-      'Quadrats', // Replace with your actual images table name
-      where: 'project_id = ?', // Assuming you have a foreign key relationship
+      'Quadrats',
+      where: 'project_id = ?',
       whereArgs: [projectId],
     );
-    // Extract image paths from the query result
     for (var map in maps) {
-      imagePaths.add(map[
-          'path']); // Replace 'path' with the actual column name for image paths
+      imagePaths.add(map['path']);
     }
 
     return imagePaths;

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class QuadratCardDesign extends StatelessWidget {
   final Map<String, dynamic> allData;
   final int projectID;
   // final int quadratID;
 
-  const QuadratCardDesign({super.key, 
+  const QuadratCardDesign({
+    super.key,
     required this.allData,
     required this.projectID,
     // required this.quadratID,
@@ -53,7 +53,7 @@ class QuadratCardDesign extends StatelessWidget {
                                   width: 200, height: 150, fit: BoxFit.cover)
                               : Center(
                                   child: Image.asset(
-                                    "assets/zingiber_zerumbet.jpg", // Use Image.asset for local images
+                                    "assets/zingiber_zerumbet.jpg",
                                     width: 200,
                                     height: 150,
                                     fit: BoxFit.cover,
@@ -62,7 +62,6 @@ class QuadratCardDesign extends StatelessWidget {
                         ),
                       ),
 
-                      // Positioned widgets remain unchanged
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -72,7 +71,8 @@ class QuadratCardDesign extends StatelessWidget {
                       children: [
                         Text(
                           allData['species_id'] ?? 'N/A',
-                          style: GoogleFonts.poppins(fontSize: 12),
+                          style: const TextStyle(
+                              fontFamily: 'Poppins', fontSize: 12),
                         ),
                         const SizedBox(
                           height: 5,
@@ -86,7 +86,8 @@ class QuadratCardDesign extends StatelessWidget {
                             ),
                             Text(
                               allData['observation_date'] ?? 'N/A',
-                              style: GoogleFonts.poppins(fontSize: 10),
+                              style: const TextStyle(
+                                  fontFamily: 'Poppins', fontSize: 10),
                             ),
                             const SizedBox(width: 20),
                             const Icon(
@@ -94,9 +95,10 @@ class QuadratCardDesign extends StatelessWidget {
                               size: 10,
                               color: Color(0xFF023C0E),
                             ),
-                            Text(
+                            const Text(
                               "20",
-                              style: GoogleFonts.poppins(fontSize: 10),
+                              style: TextStyle(
+                                  fontFamily: 'Poppins', fontSize: 10),
                             ),
                           ],
                         ),

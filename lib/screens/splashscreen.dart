@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:zingexpo/screens/home.dart';
+import 'package:zingexpo/screens/homepage_screens/home.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -51,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen>
             child: child,
           );
         },
-        child: Column(
+        child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
@@ -59,18 +58,19 @@ class _SplashScreenState extends State<SplashScreen>
               children: [
                 Text(
                   "Zing",
-                  style: GoogleFonts.poppins(
-                    color: Colors.black,
-                    fontSize: 32,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
                     fontWeight: FontWeight.w400,
+                    fontSize: 32,
                   ),
                 ),
                 Text(
                   "Expo",
-                  style: GoogleFonts.poppins(
-                    color: Colors.green,
-                    fontSize: 32,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
                     fontWeight: FontWeight.w400,
+                    fontSize: 32,
+                    color: Colors.green,
                   ),
                 ),
               ],

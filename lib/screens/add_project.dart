@@ -3,13 +3,12 @@ import 'dart:io';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
 import 'package:zingexpo/screens/meta_data_related/image_meta_data.dart';
-import 'package:zingexpo/samples/add%20button.dart';
-import 'package:zingexpo/screens/home.dart';
+import 'package:zingexpo/sample/add%20button.dart';
+import 'package:zingexpo/screens/homepage_screens/home.dart';
 import 'package:zingexpo/widgets/boxes/input_box.dart';
 import 'package:zingexpo/widgets/buttons/submit_button.dart';
 import 'package:zingexpo/widgets/buttons/submit_button_icon.dart';
@@ -72,11 +71,12 @@ class _AddProjectState extends State<AddProject> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Add Project',
-          style: GoogleFonts.poppins(
-            fontSize: 20,
+          style: TextStyle(
+            fontFamily: 'Poppins',
             fontWeight: FontWeight.w500,
+            fontSize: 20,
             color: Color(0xFF097500),
           ),
         ),
@@ -149,9 +149,9 @@ class _AddProjectState extends State<AddProject> {
 
             if (project_nameController.text.isNotEmpty) {
               await LocalDatabase().addProject(
-                  project_name: project_nameController.text,
-                  project_description: descriptionController.text,
-                  project_location: locationController.text,
+                  projectName: project_nameController.text,
+                  projectDescription: descriptionController.text,
+                  projectLocation: locationController.text,
                   imageFile: _selectedImage);
             }
 

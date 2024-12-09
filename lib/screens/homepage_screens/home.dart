@@ -7,10 +7,8 @@ import 'package:zingexpo/location/location.dart';
 import 'package:zingexpo/widgets/home_tabs/archive_tab.dart';
 import 'package:zingexpo/widgets/home_tabs/projects_tab.dart';
 import 'package:permission_handler/permission_handler.dart'
-    as permission_handler; // Alias permission_handler
+    as permission_handler; 
 
-// Uncomment the next line if you actually need to use DatabaseService
-// import 'package:zingexpo/database/database.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -28,15 +26,14 @@ class _HomeState extends State<Home> {
   String _locationMessage = "Getting location...";
 
   List<Map<String, dynamic>> filteredData = [];
-  // Uncomment the next line if you actually need to use DatabaseService
-  // final DatabaseService _databaseService = DatabaseService.instance;
+
 
   Future<void> _loadData() async {
     try {
       final data = await LocalDatabase().readData();
       setState(() {
         allData = data;
-        filteredData = List.from(data); // Create a copy of allData
+        filteredData = List.from(data); 
         // _isLoading = false;
       });
     } catch (e) {
@@ -119,9 +116,6 @@ class _HomeState extends State<Home> {
       home: Theme(
         data: ThemeData(
           primaryColor: Colors.green.shade900,
-          appBarTheme: const AppBarTheme(
-              // backgroundColor: Colors.transparent,
-              ),
         ),
         child: Container(
           child: const Column(

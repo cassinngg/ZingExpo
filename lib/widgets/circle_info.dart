@@ -112,9 +112,7 @@ class _CircleInfoPageState extends State<CircleInfoPage> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: isLoading
-            ? Center(
-                child:
-                    CircularProgressIndicator()) // Show loading indicator while waiting for data
+            ? Center(child: CircularProgressIndicator())
             : ListView(
                 children: <Widget>[
                   Text('Genus Name: ${plantDetails['genus_name']}'),

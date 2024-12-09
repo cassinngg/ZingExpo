@@ -73,9 +73,8 @@ class CircleInfoPage extends StatefulWidget {
 }
 
 class _CircleInfoPageState extends State<CircleInfoPage> {
-  Map<String, dynamic> plantDetails =
-      {}; // Removed 'final' to allow reassignment
-  bool isLoading = true; // Keep the loading flag
+  Map<String, dynamic> plantDetails = {};
+  bool isLoading = true;
 
   // @override
   // void initState() {
@@ -112,9 +111,7 @@ class _CircleInfoPageState extends State<CircleInfoPage> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: isLoading
-            ? Center(
-                child:
-                    CircularProgressIndicator()) // Show loading indicator while waiting for data
+            ? Center(child: CircularProgressIndicator())
             : ListView(
                 children: <Widget>[
                   Text('Genus Name: ${plantDetails['genus_name']}'),

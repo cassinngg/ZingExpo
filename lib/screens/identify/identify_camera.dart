@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tflite/tflite.dart';
@@ -6,7 +8,9 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:zingexpo/database/database.dart';
 import 'package:zingexpo/database/database_helper.dart';
-import 'package:zingexpo/screens/BottomNavigationBars/bottomnavbarsample.dart'; // Ensure this path is correct
+import 'package:zingexpo/screens/SpeciesFound/specie_details.dart';
+import 'package:zingexpo/screens/specific_project_Screens/specific_project_screen.dart';
+import 'package:zingexpo/screens/bottom_sheets/save_imagetoDB.dart';
 
 class ImageIdentify extends StatefulWidget {
   final int quadratID;
@@ -31,10 +35,14 @@ class _ImageIdentifyState extends State<ImageIdentify> {
   bool isLoading = true;
 
   String output = '';
-  String? imagePath; // To store the path of the selected image
+  String nextResult = '';
+  String speciesinfo = '';
+
+  String secondResult = '';
+  String? imagePath;
   double? latitude;
   double? longitude;
-  double? elevation; // Add elevation variable
+  double? elevation;
   Future<void> _loadData() async {
     try {
       final data = await LocalDatabase().readData();
@@ -57,8 +65,7 @@ class _ImageIdentifyState extends State<ImageIdentify> {
   }
 
   Future<void> _fetchProjects() async {
-    final projectID =
-        widget.allData['project_id']; // Get the selected project ID
+    final projectID = widget.allData['project_id'];
 
     _loadData();
 
@@ -83,7 +90,7 @@ class _ImageIdentifyState extends State<ImageIdentify> {
     if (pickedFile != null) {
       imagePath = pickedFile.path;
       await classifyImage(File(imagePath!));
-      await _getCurrentLocation(); // Get current location
+      await _getCurrentLocation();
     }
   }
 
@@ -94,7 +101,7 @@ class _ImageIdentifyState extends State<ImageIdentify> {
     if (pickedFile != null) {
       imagePath = pickedFile.path;
       await classifyImage(File(imagePath!));
-      await _getCurrentLocation(); // Get current location
+      await _getCurrentLocation();
     }
   }
 
@@ -109,25 +116,24 @@ class _ImageIdentifyState extends State<ImageIdentify> {
 
     if (recognitions != null) {
       setState(() {
-        // Clear previous output
         output = '';
-
-        // Debug: Print the recognitions list
+        speciesinfo = '';
+        nextResult = '';
         print("Recognitions: $recognitions");
 
-        // Check for the highest confidence label
         if (recognitions.isNotEmpty) {
-          double highestConfidence =
-              recognitions[0]['confidence'] * 100; // Convert to percentage
+          double highestConfidence = recognitions[0]['confidence'] * 100;
           String highestLabel = recognitions[0]['label'];
           output += "$highestLabel - ${highestConfidence.toStringAsFixed(2)}%";
 
-          // If the highest confidence is less than 100%, show the next possible label
+          speciesinfo = output;
+
           if (highestConfidence < 100 && recognitions.length > 1) {
             double nextConfidence = recognitions[1]['confidence'] * 100;
             String nextLabel = recognitions[1]['label'];
             output +=
                 "\nNext Possible: $nextLabel - ${nextConfidence.toStringAsFixed(2)}%";
+            nextResult = "$nextLabel - ${nextConfidence.toStringAsFixed(2)}%";
           } else {
             output += "\nNo next possible identification available.";
           }
@@ -142,54 +148,30 @@ class _ImageIdentifyState extends State<ImageIdentify> {
     setState(() {
       latitude = position.latitude;
       longitude = position.longitude;
-      elevation = position.altitude; // Get elevation
+      elevation = position.altitude;
     });
   }
 
-  Future<void> _saveIdentifiedSpecie() async {
-    // Always save the species name, default to "Unidentified" if no output
-    String speciesName =
-        output.isNotEmpty ? output.split(' - ').first : "Unidentified";
-
-    try {
-      if (widget.projectID != null && widget.quadratID != null) {
-        await LocalDatabase().insertImageData({
-          'image_name': speciesName,
-          'image_path': imagePath,
-          'latitude': latitude ?? 0.0, // Use 0.0 if latitude is null
-          'longitude': longitude ?? 0.0, // Use 0.0 if longitude is null
-          'elevation': elevation ?? 0.0, // Use 0.0 if elevation is null
-          "project_id": widget.projectID,
-          "quadrat_id": widget.quadratID,
-          'capture_date': DateTime.now().toIso8601String(),
-        });
-
-        // Show a success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Species saved successfully!')),
+  void showAddQuadratBottomSheet(BuildContext context, Uint8List image) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return SaveImageTodb(
+          image: image,
+          projectID: widget.projectID,
+          quadratID: widget.quadratID,
+          elevation: elevation,
+          latitude: latitude,
+          longitude: longitude,
+          output: output,
+          secondResult: nextResult,
+          onAdd: () {
+            _loadData();
+          },
         );
-        Navigator.pop(context);
-        // Navigator.pushAndRemoveUntil(
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: (context) => FloatingSample(
-        //               allData: widget.allData,
-        //               projectID: widget.projectID,
-        //               onDelete: () {
-        //                 _fetchProjects(); // Fetch the updated list
-        //               },
-        //             )),
-        //     (route) => false);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Project ID or Quadrat ID is missing.')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving species: $e')),
-      );
-    }
+      },
+    );
   }
 
   @override
@@ -226,8 +208,7 @@ class _ImageIdentifyState extends State<ImageIdentify> {
                 fontSize: 20,
               ),
             ),
-            const SizedBox(height: 20), // Add some space before the buttons
-
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: openGallery,
               child: const Text('Select Image from Gallery'),
@@ -236,9 +217,49 @@ class _ImageIdentifyState extends State<ImageIdentify> {
               onPressed: openCamera,
               child: const Text('Open Camera'),
             ),
+            const SizedBox(
+              height: 10,
+            ),
+            if (output == 'Unidentified')
+              const Text('')
+            else
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            SpeciesDetails(speciesinfo: speciesinfo),
+                      ),
+                    );
+                  },
+                  child: const Text('See Species Information')),
+            const SizedBox(
+              height: 10,
+            ),
             if (output.isNotEmpty)
               ElevatedButton(
-                onPressed: _saveIdentifiedSpecie,
+                onPressed: () async {
+                  final Uint8List imageBytes =
+                      await File(imagePath!).readAsBytes();
+
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SaveImageTodb(
+                                image: imageBytes,
+                                projectID: widget.projectID,
+                                quadratID: widget.quadratID,
+                                elevation: elevation,
+                                latitude: latitude,
+                                longitude: longitude,
+                                output: output,
+                                secondResult: nextResult,
+                                onAdd: () {
+                                  _loadData();
+                                },
+                              )));
+                },
                 child: const Text('Save Identified Specie to Database'),
               ),
           ],

@@ -29,7 +29,7 @@ class _QuadratListState extends State<QuadratList> {
   @override
   void initState() {
     super.initState();
-    _loadQuadrats(); // Call loadQuadrats here
+    _loadQuadrats();
   }
 
   @override
@@ -41,7 +41,6 @@ class _QuadratListState extends State<QuadratList> {
           : _quadrats.isEmpty
               ? Center(child: Text('No data available'))
               : ListView.builder(
-                  // ... rest of your build method ...
                   itemCount: _quadrats.length,
                   itemBuilder: (context, index) {
                     return Card(

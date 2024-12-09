@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class HeadingQuadrat extends StatelessWidget {
   final String title;
@@ -11,14 +10,15 @@ class HeadingQuadrat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      alignment: Alignment.centerLeft, // Ensure the text is aligned to the left
+      alignment: Alignment.centerLeft, 
       child: Column(
         crossAxisAlignment:
-            CrossAxisAlignment.start, // Align children to the start (left)
+            CrossAxisAlignment.start, 
         children: [
           Text(
             title,
-            style: GoogleFonts.poppins(
+            style: const TextStyle(
+              fontFamily: 'Poppins',
               fontSize: 20,
               color: Colors.black,
               fontWeight: FontWeight.w600,

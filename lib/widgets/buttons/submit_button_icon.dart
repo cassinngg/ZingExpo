@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class SubmitButtonWithAddIcon extends StatelessWidget {
@@ -39,8 +38,8 @@ class SubmitButtonWithAddIcon extends StatelessWidget {
         style: ButtonStyle(
           backgroundColor: MaterialStatePropertyAll(foregroundColor),
           foregroundColor: MaterialStatePropertyAll(foregroundColor),
-          padding:
-              const MaterialStatePropertyAll(EdgeInsets.symmetric(horizontal: 48)),
+          padding: const MaterialStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 48)),
           shape: MaterialStatePropertyAll(RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
@@ -61,7 +60,8 @@ class SubmitButtonWithAddIcon extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               label,
-              style: GoogleFonts.poppins(
+              style: TextStyle(
+                fontFamily: 'Poppins',
                 fontSize: adjustedFontSize,
                 fontWeight: FontWeight.w600,
                 color: backgroundColor,

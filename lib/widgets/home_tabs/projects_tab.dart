@@ -1,13 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
-import 'package:zingexpo/design/card_design.dart';
 import 'package:zingexpo/design/logo.dart';
 import 'package:zingexpo/screens/add_project.dart';
-import 'package:zingexpo/widgets/open_projects.dart';
-import 'package:zingexpo/widgets/project_carousel.dart';
+import 'package:zingexpo/screens/homepage_screens/open_projects.dart';
+import 'package:zingexpo/screens/homepage_screens/project_carousel.dart';
 
 class HomeProjectsTab extends StatefulWidget {
   const HomeProjectsTab({super.key});
@@ -25,7 +23,7 @@ class _HomeProjectsTabState extends State<HomeProjectsTab> {
 
   Future<void> _loadData() async {
     setState(() {
-      _isLoading = true; // Show loading indicator
+      _isLoading = true;
     });
 
     try {
@@ -38,22 +36,22 @@ class _HomeProjectsTabState extends State<HomeProjectsTab> {
       print('Error loading data: $e');
     } finally {
       setState(() {
-        _isLoading = false; // Hide loading indicator
+        _isLoading = false;
       });
     }
   }
 
   void _refreshData() {
-    _loadData(); // Call the method to refresh the data
+    _loadData();
   }
 
   Future<void> _fetchProjects() async {
-    final projectID = allData; // Get the selected project ID
+    final projectID = allData;
 
     _loadData();
 
     setState(() {
-      _isLoading = false; // Loading done
+      _isLoading = false;
     });
     _loadData();
   }
@@ -93,7 +91,7 @@ class _HomeProjectsTabState extends State<HomeProjectsTab> {
                   icon: const Icon(Icons.add, color: Colors.green, size: 30),
                 ),
               ],
-              title: Row(
+              title: const Row(
                 children: [Logo()],
               ),
               bottom: PreferredSize(
@@ -146,8 +144,12 @@ class _HomeProjectsTabState extends State<HomeProjectsTab> {
                               const EdgeInsets.fromLTRB(10.0, 15.0, 20.0, 15.0),
                           filled: true,
                         ),
-                        style: GoogleFonts.poppins(
-                            fontSize: 10, fontWeight: FontWeight.w100),
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          // color: Color(0xFF097500),
+                          fontWeight: FontWeight.w100,
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -160,10 +162,14 @@ class _HomeProjectsTabState extends State<HomeProjectsTab> {
                         Tab(text: "Archived"),
                         Tab(text: ""),
                       ],
-                      labelStyle: GoogleFonts.poppins(
-                          fontSize: 9, fontWeight: FontWeight.w400),
-                      unselectedLabelStyle: GoogleFonts.poppins(
-                          fontSize: 9, fontWeight: FontWeight.w400),
+                      labelStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 9),
+                      unselectedLabelStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 9),
                     ),
                   ],
                 ),
@@ -176,14 +182,17 @@ class _HomeProjectsTabState extends State<HomeProjectsTab> {
                 SingleChildScrollView(
               child: Column(
                 children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
                   Container(
                     margin: const EdgeInsets.fromLTRB(30, 0, 10, 0),
                     alignment: Alignment.topLeft,
-                    child: Text(
+                    child: const Text(
                       "Projects",
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 13,
                       ),
                     ),
                   ),
@@ -209,11 +218,14 @@ class _HomeProjectsTabState extends State<HomeProjectsTab> {
                   Container(
                     margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
                     alignment: Alignment.topLeft,
-                    child: Text("Recent Open Project",
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        )),
+                    child: const Text(
+                      "Recent Open Project",
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
@@ -247,12 +259,13 @@ class _HomeProjectsTabState extends State<HomeProjectsTab> {
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerFloat,
             floatingActionButton: FloatingActionButton.extended(
-              label: Text(
+              label: const Text(
                 "New Project",
-                style: GoogleFonts.poppins(
-                  fontSize: 9,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
                   fontWeight: FontWeight.w400,
-                  color: const Color.fromARGB(255, 11, 190, 17),
+                  fontSize: 9,
+                  color: Color.fromARGB(255, 11, 190, 17),
                 ),
               ),
               icon: const PhosphorIcon(

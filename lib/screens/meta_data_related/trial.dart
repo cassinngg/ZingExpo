@@ -145,7 +145,6 @@ class _ListandDownloadMetaDataState extends State<ListandDownloadMetaData> {
     DatabaseHelper dbHelper = DatabaseHelper();
     List<Map<String, dynamic>> images = await dbHelper.getAllImages();
 
-    // Log the retrieved images
     print('Retrieved Images: $images');
 
     setState(() {
@@ -155,7 +154,6 @@ class _ListandDownloadMetaDataState extends State<ListandDownloadMetaData> {
 
   Future<void> _downloadImage(String imageUrl) async {
     try {
-      // Get the temporary directory
       Directory tempDir = await getTemporaryDirectory();
       String tempPath = '${tempDir.path}/${imageUrl.split('/').last}';
 
@@ -165,7 +163,6 @@ class _ListandDownloadMetaDataState extends State<ListandDownloadMetaData> {
 
       print('Image downloaded to $tempPath');
 
-      // Save the downloaded image to the gallery
       await _saveImageToGallery(tempPath);
     } catch (e) {
       print('Error downloading image: $e');
@@ -179,22 +176,18 @@ class _ListandDownloadMetaDataState extends State<ListandDownloadMetaData> {
     final imageFile = File(imagePath);
 
     if (await imageFile.exists()) {
-      // Get the Pictures directory
       final directory = await getExternalStorageDirectory();
       final targetPath =
           '${directory!.path}/Pictures/${imageFile.uri.pathSegments.last}';
 
-      // Create the Pictures directory if it doesn't exist
       final picturesDir = Directory('${directory.path}/Pictures');
       if (!await picturesDir.exists()) {
         await picturesDir.create(recursive: true);
       }
 
-      // Copy the image to the Pictures directory
       await imageFile.copy(targetPath);
       print('Image saved to $targetPath');
 
-      // Notify the gallery about the new image
       await Process.run('am', [
         'broadcast',
         '-a',

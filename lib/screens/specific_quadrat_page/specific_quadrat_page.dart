@@ -223,11 +223,13 @@
 // }
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
 import 'package:zingexpo/sample/file_access.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/camera_identify.dart';
+import 'package:zingexpo/screens/homepage_screens/home.dart';
 import 'package:zingexpo/widgets/card_ginger.dart';
+import 'package:zingexpo/widgets/heading_page.dart';
 import 'package:zingexpo/widgets/heading_quadrat.dart';
 import 'package:zingexpo/widgets/quadratcarddesign.dart';
 
@@ -252,6 +254,7 @@ class _SpecificQuadratState extends State<SpecificQuadrat> {
   bool _isLoading = true;
   List<Map<String, dynamic>> quadratData =
       []; // Store the quadrats for the selected project
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -275,6 +278,26 @@ class _SpecificQuadratState extends State<SpecificQuadrat> {
     }
   }
 
+  // Future<void> fetchIdentifiedSpecies(int projectId) async {
+  //   try {
+  //     final projectID =
+  //         widget.allData['project_id']; // Get the selected project ID
+  //     if (projectID != null) {
+  //       // Fetch identified species from the local database based on projectId
+  //       identifiedSpecies =
+  //           await LocalDatabase().getIdentifiedSpeciesByQuadrat(projectId);
+  //       setState(() {
+  //         isLoading = false; // Set loading to false after fetching data
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching identified species: $e');
+  //     setState(() {
+  //       isLoading = false; // Set loading to false in case of error
+  //     });
+  //   }
+  // }
+
   Future<void> _fetchGingerFromQuadrats() async {
     final quadratID = widget.quadratID;
     // final projectID = widget.allData;
@@ -288,159 +311,134 @@ class _SpecificQuadratState extends State<SpecificQuadrat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color.fromARGB(0, 58, 56, 56),
         elevation: 0,
-        iconTheme: const IconThemeData(
-          color: Colors.black,
-        ),
+        iconTheme: const IconThemeData(color: Colors.black),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: HeadingQuadrat(
-                  title: widget.allData['quadrat_name'] ?? 'N/A',
-                ),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+                    child: Container(
+                      margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: Text(
+                        widget.allData['quadrat_name'] ?? 'N/A',
+                        style: const TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      // HeadingText(
+                      //   title: widget.allData['quadrat_name'] ?? 'N/A',
+                      // description:
+                      //     widget.allData['quadrat_description'] ?? 'N/A',
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator()) // Show loading indicator
-          : SingleChildScrollView(
-              child: Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 13),
-                    Text(
-                      "Identified Ginger",
-                      style: GoogleFonts.poppins(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600),
+      // body: NotificationListener<ScrollNotification>(
+      //   onNotification: onScrollNotification,
+      //   child: NavigationScreen(iconList[_bottomNavIndex]),
+      // ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+          child: Container(
+            alignment: Alignment.centerLeft,
+            margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // body[_currentIndex],
+                const SizedBox(height: 13),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(
+                    "Species Found",
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      color: Colors.black,
                     ),
-                    allData.isNotEmpty
-                        ? Container(
-                            margin: EdgeInsets.zero, // Ensure no margin
-                            child: CarouselSlider.builder(
-                              itemCount: allData.length,
-                              itemBuilder: (context, index, realIndex) {
-                                return Container(
-                                  margin: EdgeInsets
-                                      .zero, // Ensure no margin for each item
-                                  child: QuadratCardDesign(
-                                    allData: allData[index],
-                                    projectID: allData[index]['project_id'],
-                                  ),
-                                );
-                              },
-                              options: CarouselOptions(
-                                height: 260.0, // Set a fixed height if needed
-                                aspectRatio: 1.75,
-                                viewportFraction:
-                                    .60, // Display one item at a time
-                                initialPage: 0,
-                                enableInfiniteScroll:
-                                    false, // Disable infinite scrolling
-                                reverse: false,
-                                autoPlay: true,
-                                autoPlayInterval: const Duration(seconds: 3),
-                                autoPlayAnimationDuration:
-                                    const Duration(milliseconds: 800),
-                                autoPlayCurve: Curves.fastOutSlowIn,
-                                enlargeCenterPage:
-                                    false, // Disable center page enlargement
-                                enlargeFactor:
-                                    0.0, // Set enlargement factor to 0
-                                padEnds: false, // Disable padding at ends
-                                // Disable center page centering
-                                scrollDirection: Axis.horizontal,
-                              ),
-                            ),
-                          )
-                        : const Center(
-                            child: Text("No recent projects available.")),
-                    const SizedBox(height: 10),
-                    Text(
-                      "Identified Sub-family",
-                      style: GoogleFonts.poppins(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 10),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: quadratData.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 20,
-                        childAspectRatio: .85,
-                      ),
-                      itemBuilder: (BuildContext context, int index) {
-                        return quadratData.isNotEmpty
-                            ? GingerCard(
-                                allData: quadratData[index],
-                              )
-                            : const Center(
-                                child: Text(
-                                    "No Quadrats created for this project"), // Message if no data
-                              );
-                      },
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-      floatingActionButton: Stack(
-        alignment: Alignment.center,
-        children: [
-          FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ProjectShareExample(
-                          projectData: {
-                            'project_id': widget.projectID,
-                            'project_name': widget.allData['project_name'],
-                            'project_description':
-                                widget.allData['project_description'],
-                            'project_location':
-                                widget.allData['project_location'],
-                          },
-                          projectID: widget.projectID,
-                        )),
-              );
-            },
-            backgroundColor: const Color.fromARGB(255, 8, 82, 10),
-            child: const Icon(
-              Icons.camera,
-              color: Color.fromARGB(255, 255, 255, 255),
+
+                const SizedBox(
+                    // height: 100, // Set a fixed height for the SizedBox
+                    child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    children: [
+                      // Set a fixed width for each CircleInfoPage
+                      // CircleInfoPage(
+                      //   projectId: widget.projectID,
+                      //   allData: widget.allData,
+                      // ),
+                    ],
+                  ),
+                )),
+
+                const SizedBox(height: 18),
+                const Text(
+                  "Quadrats",
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                quadratData.isNotEmpty
+                    ? GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: quadratData.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: .65,
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          return QuadratCardDesign(
+                            allData: allData[index],
+                            projectID: allData[index]['project_id'],
+                          ); // Pass the project data directly
+                        },
+                      )
+                    : const Column(
+                        children: [
+                          Center(
+                            child: Text(
+                              "No Quadrats created for this project",
+                              style:
+                                  TextStyle(fontFamily: 'Poppins', fontSize: 9),
+                            ),
+                          ),
+                          Text(
+                            "Add Quadrats To Start.",
+                            style:
+                                TextStyle(fontFamily: 'Poppins', fontSize: 7),
+                          ),
+                        ],
+                      )
+              ],
             ),
           ),
-          // Positioned(
-          //   top: -20, // Adjust the position as needed
-          //   child: Text(
-          //     'Add New Project',
-          //     style: TextStyle(
-          //       color: Colors.white,
-          //       fontSize: 16,
-          //     ),
-          //   ),
-          // ),
-        ],
+        ),
       ),
     );
   }

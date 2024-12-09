@@ -184,11 +184,11 @@ class _RealtimeCamScreenState extends State<RealtimeCamScreen> {
   // }
   @override
   void dispose() {
-    Tflite.close(); // Dispose of the model
+    Tflite.close();
     super.dispose();
   }
 
-  bool _isProcessing = false; // Add this flag
+  bool _isProcessing = false;
 
   Future<void> runModelOnImage(String imagePath) async {
     if (_isProcessing) {
@@ -196,7 +196,7 @@ class _RealtimeCamScreenState extends State<RealtimeCamScreen> {
       return;
     }
 
-    _isProcessing = true; // Set to true to block new requests
+    _isProcessing = true;
 
     try {
       var recognitions = await Tflite.runModelOnImage(
@@ -223,7 +223,7 @@ class _RealtimeCamScreenState extends State<RealtimeCamScreen> {
         _resultText = "Failed to process image.";
       });
     } finally {
-      _isProcessing = false; // Reset the flag when done
+      _isProcessing = false;
     }
   }
 

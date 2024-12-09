@@ -1,6 +1,4 @@
-
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:zingexpo/database/database.dart';
 
 class GingerCard extends StatefulWidget {
@@ -14,7 +12,7 @@ class GingerCard extends StatefulWidget {
 class _GingerCardState extends State<GingerCard> {
   List<Map<String, dynamic>> allData = [];
   // bool _isLoading = true;
-  List quadratData = []; // Store the quadrats for the selected project
+  List quadratData = [];
   bool isLoading = true;
 
   Future<void> _loadData() async {
@@ -43,12 +41,11 @@ class _GingerCardState extends State<GingerCard> {
     // final quadratID = widget.allData['quadrat_id'];
     final gingerID = widget.allData['species_id'];
     if (gingerID != null) {
-      // Fetch quadrats using the project ID
       quadratData =
           await LocalDatabase().getGingersFromQuadrats(gingerID as int);
     }
     setState(() {
-      isLoading = false; // Loading done
+      isLoading = false;
     });
   }
 
@@ -79,7 +76,7 @@ class _GingerCardState extends State<GingerCard> {
                               width: 206, height: 160, fit: BoxFit.cover)
                           : Center(
                               child: Image.asset(
-                                "assets/zingiber_zerumbet.jpg", // Use Image.asset for local images
+                                "assets/zingiber_zerumbet.jpg",
                                 width: 206,
                                 height: 160,
                                 fit: BoxFit.cover,
@@ -96,7 +93,7 @@ class _GingerCardState extends State<GingerCard> {
                     //   ),
                     // ),
                     Positioned(
-                      left: 5, // Position at the right edge
+                      left: 5,
                       top: 5,
                       child: SizedBox(
                         width: 55,
@@ -122,16 +119,16 @@ class _GingerCardState extends State<GingerCard> {
                 const SizedBox(height: 10),
                 Text(
                   widget.allData['ginger_name'],
-                  style: GoogleFonts.poppins(
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                // This pushes the description to the bottom
-
                 Text(
                   widget.allData['sub_family'],
-                  style: GoogleFonts.poppins(
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
                     fontSize: 10,
                   ),
                 ),
@@ -140,20 +137,22 @@ class _GingerCardState extends State<GingerCard> {
                 ),
                 Text(
                   widget.allData['tribe'],
-                  style: GoogleFonts.poppins(
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
                     fontSize: 10,
                   ),
                 ),
-                Row(
+                const Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.grass_outlined,
                       size: 20,
                       color: Color(0xFF023C0E),
                     ),
                     Text(
                       "Zingiberaceae",
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
                         fontSize: 10,
                       ),
                     ),

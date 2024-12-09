@@ -1,15 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
 import 'package:zingexpo/design/card_design.dart';
 import 'package:zingexpo/design/logo.dart';
-import 'package:zingexpo/screens/add_project.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/camera_identify.dart';
-import 'package:zingexpo/widgets/open_projects.dart';
+import 'package:zingexpo/screens/homepage_screens/open_projects.dart';
 // Uncomment the next line if you actually need to use DatabaseService
 // import 'package:zingexpo/database/database.dart';
 
@@ -145,7 +141,8 @@ class _BackupHomeState extends State<BackupHome> {
                                     10.0, 15.0, 20.0, 15.0),
                                 filled: true,
                               ),
-                              style: GoogleFonts.poppins(
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
                                 fontSize: 14,
                               ),
                             ),
@@ -179,47 +176,49 @@ class _BackupHomeState extends State<BackupHome> {
                 const SizedBox(height: 10),
                 Container(
                   margin: const EdgeInsets.fromLTRB(30, 0, 10, 0),
-                  child: Text(
+                  alignment: Alignment.topLeft,
+                  child: const Text(
                     "Projects",
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
+                      fontSize: 18,
                     ),
                   ),
-                  alignment: Alignment.topLeft,
                 ),
-                allData.isNotEmpty
-                    ? CarouselSlider.builder(
-                        itemCount: allData.length,
-                        itemBuilder: (context, index, realIndex) {
-                          return CardDesign(
-                            allData: allData[index],
-                            projectID: allData[index]['project_id'],
-                          ); // Pass the project data directly
-                        },
-                        options: CarouselOptions(
-                          height: 320,
-                          autoPlay: false,
-                          aspectRatio: 3.0,
+                // allData.isNotEmpty
+                //     ? CarouselSlider.builder(
+                //         itemCount: allData.length,
+                //         itemBuilder: (context, index, realIndex) {
+                //           return CardDesign(
+                //             allData: allData[index],
+                //             projectID: allData[index]['project_id'],
+                //           ); // Pass the project data directly
+                //         },
+                //         options: CarouselOptions(
+                //           height: 320,
+                //           autoPlay: false,
+                //           aspectRatio: 3.0,
 
-                          // enlargeCenterPage: true,
-                          viewportFraction: .63,
-                          enableInfiniteScroll: true,
-                        ),
-                      )
-                    : Center(
-                        child: Text(
-                            "No recent projects available.")), // Message if no data
-                const SizedBox(height: 20),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(30, 0, 10, 0),
-                  child: Text("Recent Open Project",
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      )),
-                  alignment: Alignment.topLeft,
-                ),
+                //           // enlargeCenterPage: true,
+                //           viewportFraction: .63,
+                //           enableInfiniteScroll: true,
+                //         ),
+                //       )
+                //     : const Center(
+                //         child: Text(
+                //             "No recent projects available.")), // Message if no data
+                // const SizedBox(height: 20),
+                // Container(
+                //   margin: const EdgeInsets.fromLTRB(30, 0, 10, 0),
+                //   alignment: Alignment.topLeft,
+                //   child: const Text(
+                //     "Recent Open Project",
+                //     style: TextStyle(
+                //       fontWeight: FontWeight.w600,
+                //       fontSize: 13,
+                //     ),
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: allData.isNotEmpty
@@ -233,7 +232,7 @@ class _BackupHomeState extends State<BackupHome> {
                               child: Container(
                                 decoration: BoxDecoration(
                                   border: Border.all(
-                                    color: Color(
+                                    color: const Color(
                                         0xFFEAEAEA), // Change this to your desired color
                                     width: 1.0, // Adjust the width as needed
                                   ),
@@ -247,7 +246,7 @@ class _BackupHomeState extends State<BackupHome> {
                             );
                           },
                         )
-                      : Text('No data available'),
+                      : const Text('No data available'),
                 )
                 // Padding(
                 //   padding: const EdgeInsets.all(10.0),
@@ -276,9 +275,9 @@ class _BackupHomeState extends State<BackupHome> {
                           builder: (context) => RealtimeCamScreen()),
                     );
                   },
-                  child: Icon(
+                  child: const Icon(
                     Icons.add,
-                    color: const Color.fromARGB(255, 8, 82, 10),
+                    color: Color.fromARGB(255, 8, 82, 10),
                   ),
                 ),
                 // Positioned(

@@ -60,7 +60,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:native_exif/native_exif.dart';
 
@@ -219,7 +218,7 @@ class _SamState extends State<Sam> {
                     child: const Text('Update date attribute'),
                   ),
                   TextButton(
-                    onPressed: updateGPSAttributes, // Call the new method
+                    onPressed: updateGPSAttributes,  
                     child: const Text('Update GPS attributes'),
                   ),
                   ElevatedButton(

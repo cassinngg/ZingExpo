@@ -3,20 +3,15 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:zingexpo/database/database.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/camera_identify.dart';
-import 'package:zingexpo/screens/BottomNavigationBars/share_quadrat.dart';
-import 'package:zingexpo/screens/add_quadrats.dart';
-import 'package:zingexpo/screens/home.dart';
-import 'package:zingexpo/widgets/card_quadrat.dart';
-import 'package:zingexpo/widgets/circular_plant.dart';
+import 'package:zingexpo/screens/homepage_screens/home.dart';
 import 'package:zingexpo/widgets/heading_page.dart';
 
 class NavbarSample extends StatefulWidget {
   final Map<String, dynamic> allData;
   final int projectID;
-  NavbarSample({required this.allData, required this.projectID});
+  const NavbarSample({required this.allData, required this.projectID});
 
   @override
   State<NavbarSample> createState() => _NavbarSampleState();
@@ -46,7 +41,6 @@ class _NavbarSampleState extends State<NavbarSample> {
       setState(() {
         _isLoading = false;
       });
-      // Handle error (show dialog, log, etc.)
     }
   }
 
@@ -58,15 +52,13 @@ class _NavbarSampleState extends State<NavbarSample> {
   }
 
   Future<void> _fetchQuadrats() async {
-    final projectID =
-        widget.allData['project_id']; // Get the selected project ID
+    final projectID = widget.allData['project_id'];
     if (projectID != null) {
-      // Fetch quadrats using the project ID
       quadratData =
           await LocalDatabase().getQuadratsByProjectID(projectID as int);
     }
     setState(() {
-      isLoading = false; // Loading done
+      isLoading = false;
     });
   }
 
@@ -121,26 +113,26 @@ class _NavbarSampleState extends State<NavbarSample> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.edit),
+            icon: const Icon(Icons.edit),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Edit Project Unavailable")));
+                  const SnackBar(content: Text("Edit Project Unavailable")));
               print('Edit button pressed');
             },
           ),
           IconButton(
-            icon: Icon(Icons.delete, color: Colors.red),
+            icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Confirm Deletion'),
-                    content:
-                        Text('Are you sure you want to delete this project?'),
+                    title: const Text('Confirm Deletion'),
+                    content: const Text(
+                        'Are you sure you want to delete this project?'),
                     actions: <Widget>[
                       TextButton(
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                         onPressed: () => Navigator.of(context).pop(),
                       ),
                       // TextButton(
@@ -158,7 +150,7 @@ class _NavbarSampleState extends State<NavbarSample> {
         ],
         iconTheme: const IconThemeData(color: Colors.black),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(50.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -186,15 +178,17 @@ class _NavbarSampleState extends State<NavbarSample> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // body[_currentIndex],
-              SizedBox(height: 13),
+              const SizedBox(height: 13),
               Container(
                 alignment: Alignment.centerLeft,
-                child: Text(
+                child: const Text(
                   "Species Found",
-                  style: GoogleFonts.poppins(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
                 ),
               ),
 
@@ -213,19 +207,21 @@ class _NavbarSampleState extends State<NavbarSample> {
               //     }).toList(),
               //   ),
               // ),
-              SizedBox(height: 18),
-              Text(
+              const SizedBox(height: 18),
+              const Text(
                 "Quadrats",
-                style: GoogleFonts.poppins(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
               ),
-              SizedBox(height: 18),
+              const SizedBox(height: 18),
               quadratData.isNotEmpty
                   ? GridView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: quadratData.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -241,7 +237,7 @@ class _NavbarSampleState extends State<NavbarSample> {
                         // );
                       },
                     )
-                  : Center(
+                  : const Center(
                       child: Text("No Quadrats created for this project"),
                     )
             ],
@@ -258,7 +254,7 @@ class _NavbarSampleState extends State<NavbarSample> {
           //   ),
           // );
         },
-        child: Icon(Icons.add, color: const Color.fromARGB(255, 8, 82, 10)),
+        child: const Icon(Icons.add, color: Color.fromARGB(255, 8, 82, 10)),
       ),
     );
   }

@@ -6,43 +6,46 @@ import 'package:circular_reveal_animation/circular_reveal_animation.dart';
 // import 'package:circular_reveal_animation/circular_reveal_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
+import 'package:zingexpo/sample/backups/add_quadratsample.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/camera_identify.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/share_quadrat.dart';
-import 'package:zingexpo/screens/add_quadrats.dart';
+import 'package:zingexpo/screens/bottom_sheets/add_quadrats.dart';
 import 'package:zingexpo/screens/edit_screens/edit_project.dart';
-import 'package:zingexpo/screens/home.dart';
+import 'package:zingexpo/screens/homepage_screens/home.dart';
 import 'package:zingexpo/screens/identify/identify_camera.dart';
 import 'package:zingexpo/screens/shannon/shannon.dart';
-import 'package:zingexpo/widgets/card_quadrat.dart';
-import 'package:zingexpo/widgets/circular_plant.dart';
+import 'package:zingexpo/widgets/specific_project/card_quadrat.dart';
+import 'package:zingexpo/widgets/specific_project/circular_plant.dart';
 import 'package:zingexpo/widgets/heading_page.dart';
 // import 'package:lanarsnavbarflutter/theme/app_theme.dart';
 // import 'package:lanarsnavbarflutter/theme/custom_colors_theme.dart';
 
-class FloatingSample extends StatefulWidget {
-  final Map<String, dynamic> allData;
+class SpecificProjectsPage extends StatefulWidget {
+  Map<String, dynamic> allData;
   final int projectID;
-  final VoidCallback onDelete; // Callback for deletion
+  final VoidCallback onDelete;
+  final VoidCallback onProjectUpdated;
 
-  const FloatingSample({
+  SpecificProjectsPage({
     super.key,
     required this.allData,
     required this.projectID,
     required this.onDelete,
+    required this.onProjectUpdated,
+    // required this.onProjectUpdated,
   });
 
   @override
-  State<FloatingSample> createState() => _FloatingSampleState();
+  State<SpecificProjectsPage> createState() => _SpecificProjectsPageState();
 }
 
-class _FloatingSampleState extends State<FloatingSample>
+class _SpecificProjectsPageState extends State<SpecificProjectsPage>
     with TickerProviderStateMixin {
   // final controller = Get.put(NavigationController());
   late final int projectID;
-
+  int _counter = 0;
   int _currentIndex = 0;
   List<Widget> body = [
     Icon(Icons.add),
@@ -70,6 +73,13 @@ class _FloatingSampleState extends State<FloatingSample>
     }
   }
 
+  void _onFetchUpdated(Map<String, dynamic> updatedData) {
+    setState(() {
+      widget.allData = updatedData; // Update the project data
+    });
+    _fetchQuadrats(); // Fetch the updated quadrat data
+  }
+
   Future<void> _fetchQuadrats() async {
     final projectID =
         widget.allData['project_id']; // Get the selected project ID
@@ -79,15 +89,14 @@ class _FloatingSampleState extends State<FloatingSample>
           await LocalDatabase().getQuadratsByProjectID(projectID as int);
       _loadData();
     }
-
     setState(() {
-      isLoading = false; // Loading done
+      isLoading = false; 
     });
     _loadData();
   }
 
   // final autoSizeGroup = AutoSizeGroup();
-  var _bottomNavIndex = 0; //default index of a first screen
+  var _bottomNavIndex = 0; 
 
   late AnimationController _fabAnimationController;
   late AnimationController _borderRadiusAnimationController;
@@ -167,8 +176,20 @@ class _FloatingSampleState extends State<FloatingSample>
     return false;
   }
 
+  void showAddQuadratBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return AddQuadratForm(
+          projectID: widget.projectID,
+          onAdd: _fetchQuadrats,
+        );
+      },
+    );
+  }
+
   void _shareProject() {
-    // Create a string representation of the project and its quadrats
     String projectDetails = "Project: ${widget.allData['project_name']}\n";
     projectDetails +=
         "Description: ${widget.allData['project_description']}\n\n";
@@ -176,10 +197,9 @@ class _FloatingSampleState extends State<FloatingSample>
 
     for (var quadrat in quadratData) {
       projectDetails +=
-          "- Quadrant ID: ${quadrat['quadrat_id']}, Details: ${quadrat['details']}\n"; // Adjust according to your data structure
+          "- Quadrant ID: ${quadrat['quadrat_id']}, Details: ${quadrat['details']}\n"; 
     }
 
-    // Use the share_plus package to share the project details
     // Share.share(projectDetails, subject: 'Check out this project!');
   }
 
@@ -195,6 +215,10 @@ class _FloatingSampleState extends State<FloatingSample>
             icon:
                 const PhosphorIcon(PhosphorIconsBold.dotsThreeOutlineVertical),
             itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'refresh',
+                child: Text('Refresh Page'),
+              ),
               const PopupMenuItem(
                 value: 'shannonindex',
                 child: Text('Calculate Shannon Index'),
@@ -218,43 +242,45 @@ class _FloatingSampleState extends State<FloatingSample>
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Column(
+                      title: const Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             'Are you sure to delete Project?',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
                               fontWeight: FontWeight.w700,
+                              fontSize: 18,
                             ),
                             textAlign: TextAlign.center,
                           ),
                         ],
                       ),
-                      content: Column(
+                      content: const Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             'This action cannot be undone.',
-                            style: GoogleFonts.poppins(
-                              fontSize: 13,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
                               fontWeight: FontWeight.w400,
+                              fontSize: 13,
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          const Text('All Quadrats will be Deleted'),
+                          Text('All Quadrats will be Deleted'),
                         ],
                       ),
                       actions: <Widget>[
                         TextButton(
-                          child: Text(
+                          child: const Text(
                             'Cancel',
-                            style: GoogleFonts.poppins(
-                              color: Colors.blue,
-                              fontSize: 15,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
                               fontWeight: FontWeight.w700,
+                              fontSize: 15,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -263,20 +289,20 @@ class _FloatingSampleState extends State<FloatingSample>
                           },
                         ),
                         TextButton(
-                          child: Text(
+                          child: const Text(
                             'Confirm',
-                            style: GoogleFonts.poppins(
-                              color: Colors.red,
-                              fontSize: 15,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
                               fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              color: Colors.red,
                             ),
                           ),
                           onPressed: () async {
                             await LocalDatabase()
                                 .deleteProject(projectid: widget.projectID);
 
-                            widget
-                                .onDelete(); // Call the callback to notify the parent
+                            widget.onDelete();
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
                                   builder: (context) => const Home()),
@@ -293,11 +319,15 @@ class _FloatingSampleState extends State<FloatingSample>
                   context,
                   MaterialPageRoute(
                     builder: (context) => EditProject(
-                        allData: widget.allData, projectID: projectID),
+                      allData: widget.allData,
+                      projectID: widget.projectID,
+                      onUpdate: (updatedData) {
+                        _onFetchUpdated(updatedData);
+                      },
+                    ),
                   ),
                 );
-                // Handle the edit action here
-                // For example, you can navigate to an edit screen or show a form
+
                 // print('Edit Quadrat selected');
               } else if (value == 'shareproject') {
                 _shareProject();
@@ -316,6 +346,9 @@ class _FloatingSampleState extends State<FloatingSample>
                     ),
                   ),
                 );
+              } else if (value == 'refresh') {
+                _refreshData();
+                _fetchQuadrats();
               }
             },
           )
@@ -364,38 +397,66 @@ class _FloatingSampleState extends State<FloatingSample>
                   const SizedBox(height: 13),
                   Container(
                     alignment: Alignment.centerLeft,
-                    child: Text(
+                    child: const Text(
                       "Species Found",
-                      style: GoogleFonts.poppins(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
 
                   SizedBox(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: List.generate(quadratData.length, (index) {
-                          // return Text("wtf");
-                          // Ensure you have 'quadratData' defined in your context
-                          return CircleInfoPage(
-                            projectId:
-                                widget.projectID, // Ensure consistent naming
-                            allData: widget.allData,
-                          );
-                        }),
-                      ),
+                      // height: 100, // Set a fixed height for the SizedBox
+                      child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Column(
+                      children: [
+                        // Set a fixed width for each CircleInfoPage
+                        CircleInfoPage(
+                          projectId: widget.projectID,
+                          allData: widget.allData,
+                        ),
+                      ],
                     ),
-                  ),
+                  )),
+
+                  // return quadratData.isEmpty
+                  //     ? CircleInfoPage(
+                  //         projectId: widget
+                  //             .projectID, // Ensure consistent naming
+                  //         allData: widget.allData,
+                  //       );
+                  // : Container(
+                  //     width: MediaQuery.of(context).size.width,
+                  //     height: MediaQuery.of(context).size.height *
+                  //         0.05, //
+                  //     child: Padding(
+                  //       padding: const EdgeInsets.only(top: 8.0),
+                  //       child: const Center(
+                  //         child: Text(
+                  //           "No Quadrats created for this project",
+                  //           style: TextStyle(
+                  //             fontFamily: 'Poppins',
+                  //             fontSize: 6,
+                  //             fontWeight: FontWeight.w100,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   );
+
                   const SizedBox(height: 18),
-                  Text(
+                  const Text(
                     "Quadrats",
-                    style: GoogleFonts.poppins(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
                   ),
                   const SizedBox(height: 18),
                   quadratData.isNotEmpty
@@ -421,11 +482,21 @@ class _FloatingSampleState extends State<FloatingSample>
                             );
                           },
                         )
-                      : Center(
-                          child: Text(
-                            "No Quadrats created for this project",
-                            style: GoogleFonts.poppins(fontSize: 9),
-                          ),
+                      : const Column(
+                          children: [
+                            Center(
+                              child: Text(
+                                "No Quadrats created for this project",
+                                style: TextStyle(
+                                    fontFamily: 'Poppins', fontSize: 9),
+                              ),
+                            ),
+                            Text(
+                              "Add Quadrats To Start.",
+                              style:
+                                  TextStyle(fontFamily: 'Poppins', fontSize: 5),
+                            ),
+                          ],
                         )
                 ],
               ),
@@ -455,14 +526,16 @@ class _FloatingSampleState extends State<FloatingSample>
                       });
                       switch (_bottomNavIndex) {
                         case 0:
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => AddQuadrat(
-                                      allData: widget.allData,
-                                      projectID: widget.projectID,
-                                      onAdd: _fetchQuadrats,
-                                    )),
-                          );
+                          showAddQuadratBottomSheet(context);
+
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //       builder: (context) => AddQuadrat(
+                          //             allData: widget.allData,
+                          //             projectID: widget.projectID,
+                          //             onAdd: _fetchQuadrats,
+                          //           )),
+                          // );
                           break;
                         case 1:
                           Navigator.of(context).pushAndRemoveUntil(
@@ -534,84 +607,16 @@ class _FloatingSampleState extends State<FloatingSample>
         return 'Unknown';
     }
   }
-}
 
-class NavigationScreen extends StatefulWidget {
-  final IconData iconData;
-
-  NavigationScreen(this.iconData) : super();
-
-  @override
-  _NavigationScreenState createState() => _NavigationScreenState();
-}
-
-class _NavigationScreenState extends State<NavigationScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> animation;
-
-  @override
-  void didUpdateWidget(NavigationScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.iconData != widget.iconData) {
-      _startAnimation();
-    }
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
   }
 
-  @override
-  void initState() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
-    animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
-    _controller.forward();
-    super.initState();
-  }
-
-  _startAnimation() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
-    animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // final colors = Theme.of(context).extension<CustomColorsTheme>()!;
-    return Container(
-      color: Theme.of(context).colorScheme.background,
-      child: ListView(
-        children: [
-          const SizedBox(height: 64),
-          Center(
-            child: CircularRevealAnimation(
-              animation: animation,
-              centerOffset: const Offset(80, 80),
-              maxRadius: MediaQuery.of(context).size.longestSide * 1.1,
-              child: Icon(
-                widget.iconData,
-                color: Colors.blue,
-                size: 160,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  void _refreshData() {
+    setState(() {
+      _counter = 0; // Resetting the counter as an example
+    });
   }
 }

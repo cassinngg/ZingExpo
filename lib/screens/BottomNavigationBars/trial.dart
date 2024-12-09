@@ -9,7 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/camera_identify.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/share_quadrat.dart';
-import 'package:zingexpo/screens/home.dart';
+import 'package:zingexpo/screens/homepage_screens/home.dart';
 // import 'package:lanarsnavbarflutter/theme/app_theme.dart';
 // import 'package:lanarsnavbarflutter/theme/custom_colors_theme.dart';
 

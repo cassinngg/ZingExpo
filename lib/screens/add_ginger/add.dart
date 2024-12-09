@@ -3,12 +3,11 @@ import 'dart:io';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zingexpo/database/database.dart';
 import 'package:zingexpo/screens/meta_data_related/image_meta_data.dart';
-import 'package:zingexpo/samples/add%20button.dart';
-import 'package:zingexpo/screens/home.dart';
+import 'package:zingexpo/sample/add%20button.dart';
+import 'package:zingexpo/screens/homepage_screens/home.dart';
 // import 'package:image_picker/image_picker.dart';
 // import 'package:zingexpo/database/firestore_service.dart';
 
@@ -138,8 +137,6 @@ class _AddGingerPageState extends State<AddGingerPage> {
                       //   context,
                       //   MaterialPageRoute(builder: (context) => sample2()),
                       // );
-
-                      // Implement logic to save data to the database
                     },
                     child: Text(
                       'Save',
@@ -152,8 +149,7 @@ class _AddGingerPageState extends State<AddGingerPage> {
                   ListView.builder(
                       shrinkWrap: true,
                       controller: ScrollController(),
-                      itemCount: alldatalist
-                          .length, // Ensure AllDataList is accessible here
+                      itemCount: alldatalist.length,
                       itemBuilder: (context, index) {
                         return Container(
                             margin: EdgeInsets.symmetric(horizontal: 20),

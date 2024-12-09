@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:zingexpo/database/database.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/camera_identify.dart';
 import 'package:zingexpo/screens/BottomNavigationBars/share_quadrat.dart';
-import 'package:zingexpo/screens/add_quadrats.dart';
-import 'package:zingexpo/screens/home.dart';
+import 'package:zingexpo/screens/bottom_sheets/add_quadrats.dart';
+import 'package:zingexpo/screens/homepage_screens/home.dart';
 import 'package:zingexpo/widgets/heading_page.dart';
 
 class SpecificProjectSample extends StatefulWidget {
@@ -186,12 +185,14 @@ class _SpecificProjectSampleState extends State<SpecificProjectSample> {
               const SizedBox(height: 13),
               Container(
                 alignment: Alignment.centerLeft,
-                child: Text(
+                child: const Text(
                   "Species Found",
-                  style: GoogleFonts.poppins(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
                 ),
               ),
 
@@ -211,12 +212,14 @@ class _SpecificProjectSampleState extends State<SpecificProjectSample> {
               //   ),
               // ),
               const SizedBox(height: 18),
-              Text(
+              const Text(
                 "Quadrats",
-                style: GoogleFonts.poppins(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
               ),
               const SizedBox(height: 18),
               quadratData.isNotEmpty

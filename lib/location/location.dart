@@ -3,25 +3,18 @@
 
 // class LocationService {
 //   Future<void> checkAndRequestLocation() async {
-//     // Check if location services are enabled
 //     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 //     if (!serviceEnabled) {
-//       // Location services are not enabled, show a message to the user
 //       print('Location services are disabled. Please enable them in settings.');
-//       // Optionally, you can show a dialog to the user
 //       return;
 //     }
 
-//     // Request location permission
 //     var status = await Permission.location.status;
 //     if (!status.isGranted) {
-//       // Request permission
 //       await Permission.location.request();
 //     }
 
-//     // Check if permission is granted
 //     if (await Permission.location.isGranted) {
-//       // Permission granted, you can now access the location
 //       _getCurrentLocation();
 //     } else {
 //       print('Location permission denied');
@@ -38,12 +31,20 @@
 //     }
 //   }
 // }
+import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 
 class LocationService {
   Location location = Location();
-
-  // Change the return type to PermissionStatus
+// Future<double> getCurrentElevation() async {
+//   try {
+//     Position position = await Geolocator.getCurrentPosition();
+//     return await Geolocator.getAltitude(location: position);
+//   } catch (e) {
+//     print('Error getting elevation: $e');
+//     return null;
+//   }
+// }
   Future<PermissionStatus> requestPermission() async {
     return await location.requestPermission();
   }
@@ -67,5 +68,4 @@ class LocationService {
 
     return await location.getLocation();
   }
-  
 }

@@ -43,12 +43,10 @@ class ProjectShareExample extends StatelessWidget {
     final projectFile = File(projectFilePath);
     await projectFile.writeAsString(jsonEncode(projectData));
 
-    // Fetch quadrats from the database
     final localDatabase = LocalDatabase();
     List<Map<String, Object?>> quadrats =
         await localDatabase.getQuadratsByProjectID(projectID);
 
-    // Save each quadrat's data
     for (int i = 0; i < quadrats.length; i++) {
       final quadrat = quadrats[i];
       final quadratFilePath = '${projectFolder.path}/quadrat_${i + 1}.json';
@@ -56,7 +54,6 @@ class ProjectShareExample extends StatelessWidget {
       await quadratFile.writeAsString(jsonEncode(quadrat));
     }
 
-    // Share the project folder
     await Share.shareFiles(
       [projectFolder.path],
       text: 'Check out my project with quadrat data!',

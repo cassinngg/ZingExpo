@@ -1,226 +1,275 @@
-import 'dart:io';
+// import 'package:flutter/material.dart';
+// import 'package:zingexpo/database/database.dart';
 
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
+// class EditProject extends StatefulWidget {
+//   Map<String, dynamic> allData;
+//   final int projectID;
+//   final Function(String) onUpdate; // Add this line
+//   final Function(Map<String, dynamic>) onProjectUpdated;
+
+//   EditProject(
+//       {Key? key,
+//       required this.allData,
+//       required this.projectID,
+//       required this.onUpdate,
+//       required this.onProjectUpdated})
+//       : super(key: key);
+
+//   @override
+//   _EditProjectState createState() => _EditProjectState();
+// }
+
+// class _EditProjectState extends State<EditProject> {
+//   final _formKey = GlobalKey<FormState>();
+//   late TextEditingController _nameController;
+//   late TextEditingController _descriptionController;
+//   late TextEditingController _locationController;
+//   List<Map<String, dynamic>> allData = [];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _nameController =
+//         TextEditingController(text: widget.allData['project_name']);
+//     _descriptionController =
+//         TextEditingController(text: widget.allData['project_description']);
+//     _locationController =
+//         TextEditingController(text: widget.allData['project_location']);
+//   }
+
+//   @override
+//   void dispose() {
+//     _nameController.dispose();
+//     _descriptionController.dispose();
+//     _locationController.dispose();
+//     super.dispose();
+//   }
+
+//   void _saveChanges() async {
+//     if (_formKey.currentState!.validate()) {
+//       await LocalDatabase().updateProject(
+//         projectID: widget.projectID,
+//         projectName: _nameController.text,
+//         projectDescription: _descriptionController.text,
+//         projectLocation: _locationController.text,
+//         // Pass the image file if you want to update the image
+//         // imageFile: selectedImageFile, // Uncomment if you have a file to update
+//       );
+//       // widget.onUpdate(_nameController.text); // Call the onUpdate callback
+//       // widget._onProjectUpdated(updatedData);
+//       Navigator.pop(context);
+//     }
+//   }
+
+//   void _onProjectUpdated(Map<String, dynamic> updatedData) {
+//     setState(() {
+//       widget.allData = updatedData;
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Edit Project'),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Form(
+//           key: _formKey,
+//           child: Column(
+//             children: [
+//               TextFormField(
+//                 controller: _nameController,
+//                 decoration: const InputDecoration(labelText: 'Project Name'),
+//                 validator: (value) {
+//                   if (value == null || value.isEmpty) {
+//                     return 'Please enter a project name';
+//                   }
+//                   return null;
+//                 },
+//               ),
+//               TextFormField(
+//                 controller: _descriptionController,
+//                 decoration:
+//                     const InputDecoration(labelText: 'Project Description'),
+//                 validator: (value) {
+//                   if (value == null || value.isEmpty) {
+//                     return 'Please enter a project description';
+//                   }
+//                   return null;
+//                 },
+//               ),
+//               TextFormField(
+//                 controller: _locationController,
+//                 decoration:
+//                     const InputDecoration(labelText: 'Project Location'),
+//                 validator: (value) {
+//                   if (value == null || value.isEmpty) {
+//                     return 'Please enter a project location';
+//                   }
+//                   return null;
+//                 },
+//               ),
+//               // Add an image picker if needed
+//               ElevatedButton(
+//                 onPressed: _saveChanges,
+//                 child: const Text('Save Changes'),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:location/location.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
-import 'package:zingexpo/location/location.dart';
-import 'package:zingexpo/screens/BottomNavigationBars/bottomnavbarsample.dart';
-import 'package:zingexpo/screens/meta_data_related/image_meta_data.dart';
-import 'package:zingexpo/samples/add%20button.dart';
-import 'package:zingexpo/samples/try.dart';
-import 'package:zingexpo/screens/home.dart';
-import 'package:zingexpo/screens/project_page.dart';
-import 'package:zingexpo/widgets/boxes/input_box.dart';
-import 'package:zingexpo/widgets/buttons/submit_button.dart';
-import 'package:zingexpo/widgets/buttons/submit_button_icon.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:zingexpo/database/firestore_service.dart';
+import 'package:zingexpo/screens/homepage_screens/home.dart';
 
 class EditProject extends StatefulWidget {
   final Map<String, dynamic> allData;
   final int projectID;
-  // final Function onAdd;
+  final Function(Map<String, dynamic>) onUpdate; 
 
   EditProject({
-    super.key,
+    Key? key,
     required this.allData,
     required this.projectID,
-    // required this.onAdd,
-  });
-
+    required this.onUpdate,
+  }) : super(key: key);
+ 
   @override
-  State<EditProject> createState() => _EditProjectState();
+  _EditProjectState createState() => _EditProjectState();
 }
 
 class _EditProjectState extends State<EditProject> {
-  File? _selectedImage;
-  String imageUrl = '';
-  List<Map<String, dynamic>> allData = [];
-  String _locationMessage = "Getting location...";
-
-  final TextEditingController quadrat_nameController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _nameController;
+  late TextEditingController _descriptionController;
+  late TextEditingController _locationController;
 
   @override
   void initState() {
     super.initState();
-    _initDatabase();
+    _nameController =
+        TextEditingController(text: widget.allData['project_name']);
+    _descriptionController =
+        TextEditingController(text: widget.allData['project_description']);
+    _locationController =
+        TextEditingController(text: widget.allData['project_location']);
   }
 
-  Future<void> _selectOrCaptureImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-    setState(() {
-      if (pickedFile != null) {
-        _selectedImage = File(pickedFile.path);
-      } else {
-        _selectedImage = null;
-      }
-    });
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _locationController.dispose();
+    super.dispose();
   }
 
-  Future<void> _getLocation() async {
-    LocationService locationService = LocationService();
-    try {
-      LocationData locationData = await locationService.getCurrentLocation();
-      setState(() {
-        _locationMessage =
-            "Latitude: ${locationData.latitude}, Longitude: ${locationData.longitude}";
-      });
-    } catch (e) {
-      setState(() {
-        _locationMessage = e.toString();
-      });
-    }
-  }
+  void _saveChanges() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Quadrat'),
+          content: const Text('This action cannot be undone.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Confirm'),
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  // Create updated data map
+                  Map<String, dynamic> updatedData = {
+                    'project_id': widget.projectID,
+                    'project_name': _nameController.text,
+                    'project_description': _descriptionController.text,
+                    'project_location': _locationController.text,
+                  };
 
-  Future<void> _initDatabase() async {
-    try {
-      await LocalDatabase().database;
-      print('Database initialized successfully');
-    } catch (e) {
-      print('Error initializing database: $e');
-    }
-  }
+                  await LocalDatabase().updateProject(
+                    projectID: widget.projectID,
+                    projectName: _nameController.text,
+                    projectDescription: _descriptionController.text,
+                    projectLocation: _locationController.text,
+                    // imageFile: selectedImageFile, 
+                  );
 
-  Future<void> _loadData() async {
-    final data = await LocalDatabase().readData();
-    setState(() {
-      allData = data;
-    });
+                  widget.onUpdate(updatedData);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Home()),
+                  );
+                  // Navigator.pop(context);
+                }
+                // Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Add Quadrat',
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF097500),
-          ),
-        ),
+        title: const Text('Edit Project'),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 10, left: 5, right: 5, bottom: 5),
-                  child: Container(
-                    width: 250,
-                    height: 250,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Color.fromARGB(210, 2, 60, 14),
-                    ),
-                    child: Center(
-                      child: _selectedImage != null
-                          ? Image.file(_selectedImage!, fit: BoxFit.fill)
-                          : const PhosphorIcon(PhosphorIconsFill.imageSquare,
-                              size: 100),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 0, left: 5, right: 5),
-                  child: SubmitButtonWithAddIcon(
-                    label: 'Capture Image',
-                    onPressed: _selectOrCaptureImage,
-                  ),
-                ),
-                IconButton(
-                  onPressed: pickImageFromGallery,
-                  icon: const Icon(
-                    Icons.photo,
-                    color: Colors.green,
-                    size: 30,
-                  ),
-                ),
-                InputBox(
-                  controller: quadrat_nameController,
-                  hint: 'Quadrat Name',
-                ),
-                InputBox(
-                  hint: 'Species',
-                  controller: descriptionController,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 5, right: 5),
-                  child: SubmitButton(
-                    label: 'Add Quadrat',
-                    onPressed: () async {
-                      if (quadrat_nameController.text.isNotEmpty) {
-                        await LocalDatabase().addQuadrats(
-                            quadrat_name: quadrat_nameController.text,
-                            quadrat_description: descriptionController.text,
-                            imageFile: _selectedImage,
-                            projectID: widget.projectID);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Quadrat saved')));
-                      }
-                      // widget.onAdd();
-
-                      Navigator.pop(context); // Go back
-                      // Navigator.pushReplacement(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => FloatingSample(
-                      //             allData: widget.allData, projectID: widget.projectID)));
-                    },
-                  ),
-                ),
-
-                // ListView.builder(
-                //     shrinkWrap: true,
-                //     controller: ScrollController(),
-                //     itemCount: alldatalist
-                //         .length, // Ensure AllDataList is accessible here
-                //     itemBuilder: (context, index) {
-                //       return Container(
-                //           margin: EdgeInsets.symmetric(horizontal: 20),
-                //           height: 90,
-                //           width: double.infinity,
-                //           child: Row(
-                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //             children: [
-                //               Text(alldatalist[index]['Name']),
-                //               // Text(AllDataList[index]['Text']),
-                //             ],
-                //           ));
-                //     }),
-              ],
-            ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Project Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a project name';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _descriptionController,
+                decoration:
+                    const InputDecoration(labelText: 'Project Description'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a project description';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _locationController,
+                decoration:
+                    const InputDecoration(labelText: 'Project Location'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a project location';
+                  }
+                  return null;
+                },
+              ),
+              ElevatedButton(
+                onPressed: _saveChanges,
+                child: const Text('Save Changes'),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
-}
-//             ],
-//           ),
-//         ),
-//       ),
-//     ),
-//   );
-// }
-
-void pickImageFromGallery() async {
-  ImagePicker imagePicker = ImagePicker();
-  XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
-  print('${file?.path}');
-
-  if (file == null) return;
-  String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
 }

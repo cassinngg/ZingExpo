@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class Logo extends StatelessWidget {
   const Logo({super.key});
@@ -15,24 +14,34 @@ class Logo extends StatelessWidget {
       child: Column(
         children: [
           RichText(
-            text: TextSpan(
+            text: const TextSpan(
               children: [
                 TextSpan(
-                  text: 'Zing',
-                  style: GoogleFonts.poppins(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 30,
-                  ),
-                ),
+                    text: 'Zing',
+                    style: TextStyle(
+                        fontFamily: 'Poppins',
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 30)
+                    // style: GoogleFonts.poppins(
+                    //   color: Colors.black,
+                    //   fontWeight: FontWeight.w500,
+                    //   fontSize: 30,
+                    // ),
+                    ),
                 TextSpan(
-                  text: 'Expo',
-                  style: GoogleFonts.poppins(
-                    color: Colors.green,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 30,
-                  ),
-                ),
+                    text: 'Expo',
+                    style: TextStyle(
+                        fontFamily: 'Poppins',
+                        color: Color(0xFF097500),
+                        fontWeight: FontWeight.w500,
+                        fontSize: 30)
+                    // style: GoogleFonts.poppins(
+                    //   color: Colors.black,
+                    //   fontWeight: FontWeight.w500,
+                    //   fontSize: 30,
+                    // ),
+                    ),
               ],
             ),
           ),

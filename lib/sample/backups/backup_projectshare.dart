@@ -108,7 +108,7 @@ import 'dart:convert';
 import 'package:zingexpo/database/database.dart';
 
 class ProjectShareExample extends StatelessWidget {
-  final Map<String, dynamic> projectData; // Project details
+  final Map<String, dynamic> projectData; 
   final int projectID;
 
   const ProjectShareExample({
@@ -132,7 +132,7 @@ class ProjectShareExample extends StatelessWidget {
   Future<void> _shareProject(BuildContext context) async {
     final directory = await getApplicationDocumentsDirectory();
     final projectFolderName =
-        'Project_${projectData['name'] ?? projectID}'; // Use project name or ID
+        'Project_${projectData['name'] ?? projectID}'; 
     final projectFolder = Directory('${directory.path}/$projectFolderName');
 
     if (!await projectFolder.exists()) {
@@ -165,7 +165,6 @@ class ProjectShareExample extends StatelessWidget {
       final quadratFile = File(quadratFilePath);
       await quadratFile.writeAsString(jsonEncode(quadrat));
 
-      // Assuming you have a method to get images for each quadrat
       List<String> images = await localDatabase
           .getImagesForQuadrat(projectID); // Replace with actual field
 

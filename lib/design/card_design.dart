@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
-import 'package:zingexpo/screens/BottomNavigationBars/bottomnavbarsample.dart';
-import 'package:zingexpo/screens/project_page.dart';
+import 'package:zingexpo/screens/specific_project_Screens/specific_project_screen.dart';
 
 class CardDesign extends StatefulWidget {
-  final Map<String, dynamic> allData;
+  Map<String, dynamic> allData;
   final int projectID;
-  // final VoidCallback onDelete; // Callback for deletion
-
-  const CardDesign({
+  final VoidCallback onProjectUpdated;
+  // final VoidCallback onDelete;
+  CardDesign({
     super.key,
     required this.allData,
     required this.projectID,
+    required this.onProjectUpdated,
     // required this.onDelete,
   });
 
@@ -27,6 +26,12 @@ class _CardDesignState extends State<CardDesign> {
   bool _isLoading = true;
   List<Map<String, dynamic>> quadratData = [];
   bool isLoading = true;
+  void _onProjectUpdated(Map<String, dynamic> updatedData) {
+    setState(() {
+      widget.allData = updatedData;
+    });
+    _fetchProjects();
+  }
 
   Future<void> _loadData() async {
     try {
@@ -39,18 +44,16 @@ class _CardDesignState extends State<CardDesign> {
       setState(() {
         _isLoading = false;
       });
-      // Handle error (show dialog, log, etc.)
     }
   }
 
   Future<void> _fetchProjects() async {
-    final projectID =
-        widget.allData['project_id']; // Get the selected project ID
+    final projectID = widget.allData['project_id'];
 
     _loadData();
 
     setState(() {
-      isLoading = false; // Loading done
+      isLoading = false;
     });
     _loadData();
   }
@@ -64,12 +67,13 @@ class _CardDesignState extends State<CardDesign> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => FloatingSample(
+              builder: (context) => SpecificProjectsPage(
                     allData: widget.allData,
                     projectID: widget.projectID,
                     onDelete: () {
-                      _fetchProjects(); // Fetch the updated list
+                      _fetchProjects();
                     },
+                    onProjectUpdated: () {},
                   )),
         );
       },
@@ -86,15 +90,16 @@ class _CardDesignState extends State<CardDesign> {
       child: Padding(
         padding: const EdgeInsets.all(5),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
+          // borderRadius: BorderRadius.circular(15),
           // width: 400,
           // height: 400,
           child: Card(
             elevation: 5,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(15),
             ),
-            color: Color.fromARGB(255, 250, 250, 250),
+            // color: Color.fromARGB(255, 235, 255, 233),
+            color: Color(0xFFffffff),
             child: Padding(
               padding: const EdgeInsets.only(
                 left: 8,
@@ -120,12 +125,56 @@ class _CardDesignState extends State<CardDesign> {
                                 )
                               : Center(
                                   child: Image.asset(
-                                    "assets/zingiber_zerumbet.jpg", // Use Image.asset for local images
+                                    "assets/zingiber_zerumbet.jpg",
                                     width: 226,
                                     height: 192,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 5,
+                        right: 10,
+                        child: Row(
+                          children: [
+                            Container(
+                              height: 40,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                // borderRadius: BorderRadius.circular(50),
+                                color: Color(0xFFffffff),
+                              ),
+                              child: Center(
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: const PhosphorIcon(
+                                    PhosphorIconsRegular.upload,
+                                    color: Color(0xFF023C31),
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 70,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: const Color(0xFFffffff),
+                              ),
+                              child: Center(
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: const PhosphorIcon(
+                                    PhosphorIconsRegular.cameraPlus,
+                                    color: Color(0xFF023C31),
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -137,9 +186,10 @@ class _CardDesignState extends State<CardDesign> {
                       children: [
                         Text(
                           widget.allData['project_name'] ?? 'N/A',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.w600,
+                            fontSize: 12,
                           ),
                           textAlign: TextAlign.left,
                         ),
@@ -156,39 +206,44 @@ class _CardDesignState extends State<CardDesign> {
                             ),
                             const Padding(padding: EdgeInsets.only(top: 60)),
                             Text(
-                              widget.allData['project_description'].length > 6
+                              widget.allData['project_description'].length > 15
                                   ? widget.allData['project_description']
-                                          .substring(0, 6) +
+                                          .substring(0, 15) +
                                       '...'
                                   : widget.allData['project_description'],
-                              style: GoogleFonts.poppins(
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
                                 fontSize: 9,
-                                color: const Color(0xFF023C0E),
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF023C0E),
                               ),
                             ),
                             const SizedBox(width: 20),
                             const Spacer(
                               flex: 1,
                             ),
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.camera_alt_outlined,
-                                    size: 10,
-                                    color: Color.fromARGB(255, 0, 0, 0),
+                            // const Expanded(
+                            //   child:
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(
+                                  Icons.camera_alt_outlined,
+                                  size: 10,
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                ),
+                                Text(
+                                  "20",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 10,
+                                    color: Colors.black,
                                   ),
-                                  Text(
-                                    "20",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 10,
-                                      color: const Color.fromARGB(255, 0, 0, 0),
-                                    ),
-                                    // textAlign: TextAlign.right,
-                                  ),
-                                ],
-                              ),
+                                  // textAlign: TextAlign.right,
+                                ),
+                              ],
                             ),
+                            // ),
                           ],
                         ),
                       ],

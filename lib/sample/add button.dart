@@ -1,10 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:zingexpo/database/database.dart';
-// Uncomment the next line if you actually need to use DatabaseService
-// import 'package:zingexpo/database/database.dart';
 
 class sam extends StatefulWidget {
   const sam({super.key});
@@ -15,8 +12,7 @@ class sam extends StatefulWidget {
 
 class _samState extends State<sam> {
   final TextEditingController gingerName = TextEditingController();
-  // Uncomment the next line if you actually need to use DatabaseService
-  // final DatabaseService _databaseService = DatabaseService.instance;
+
   @override
   void initState() {
     super.initState();
@@ -111,13 +107,11 @@ class _samState extends State<sam> {
                       },
                       child: Text(
                         'Save To Database',
-                        style: GoogleFonts.poppins(),
                       ))),
               ListView.builder(
                   shrinkWrap: true,
                   controller: ScrollController(),
-                  itemCount: alldatalist
-                      .length, // Ensure AllDataList is accessible here
+                  itemCount: alldatalist.length,
                   itemBuilder: (context, index) {
                     return Container(
                         margin: EdgeInsets.symmetric(horizontal: 20),

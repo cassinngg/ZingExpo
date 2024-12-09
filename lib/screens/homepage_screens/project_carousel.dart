@@ -21,7 +21,7 @@ class ProjectCarousel extends StatelessWidget {
       itemBuilder: (context, index, realIndex) {
         return CardDesign(
           allData: projects[index],
-          projectID: projects[index]['project_id'],
+          projectID: projects[index]['project_id'], onProjectUpdated: () {  },
          
         );
       },
