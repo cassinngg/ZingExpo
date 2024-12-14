@@ -508,6 +508,21 @@ VALUES
     }
   }
 
+  Future<int> getGroupedSpeciesCount() async {
+    final db = await database; // Get the database instance
+    final List<Map<String, dynamic>> groupedSpecies = await db.rawQuery(
+      '''
+    SELECT COUNT(DISTINCT image_name) as unique_species_count
+    FROM image_meta_data
+    ''',
+    );
+
+    // Return the count of unique species
+    return groupedSpecies.isNotEmpty
+        ? groupedSpecies.first['unique_species_count'] as int
+        : 0;
+  }
+
   Future<List<Map<String, Object?>>> getProjects(int projectID) async {
     try {
       final db = await database;
@@ -572,6 +587,45 @@ VALUES
     }
   }
 
+  Future<List<Map<String, dynamic>>> getImagesByProject(int projectId) async {
+    final db = await database;
+    final List<Map<String, dynamic>> total = await db.rawQuery(
+      '''
+    SELECT image_name, image_path, COUNT(*) as total_count
+    FROM image_meta_data
+    WHERE project_id = ?
+    GROUP BY image_name
+    ''',
+      [projectId],
+    );
+    return total;
+  }
+
+  // Future<List<Map<String, dynamic>>> getImagesByProject(int projectId) async {
+  //   final db = await database;
+  //   final List<Map<String, dynamic>> total = await db.rawQuery(
+  //     '''
+  //   SELECT image_name, COUNT(*) as total_count
+  //   FROM image_meta_data
+  //   WHERE project_id = ?
+  //   GROUP BY image_name
+  //   ''',
+  //     [projectId],
+  //   );
+  //   return total;
+  // }
+  Future<List<Map<String, dynamic>>> getGroupedSpecies() async {
+    final db = await database; // Get the database instance
+    final List<Map<String, dynamic>> groupedSpecies = await db.rawQuery(
+      '''
+      SELECT image_name, COUNT(*) as total_count
+      FROM image_meta_data
+      GROUP BY image_name
+      ''',
+    );
+    return groupedSpecies; // Return the list of grouped species and their counts
+  }
+
 //  Future<List<Map<String, Object?>>> getIdentifiedSpeciesByQuadrat(
 //       int quadratID, int projectId) async {
 //     try {
@@ -601,6 +655,22 @@ VALUES
       return results;
     } catch (e) {
       print('Error querying ginger: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, Object?>>> getIdentifiedSpeciesByProjectAndQuadrat(
+      int quadratId) async {
+    try {
+      final db = await database;
+      final results = await db.query(
+        "image_meta_data",
+        where: "quadrat_id = ?",
+        whereArgs: [quadratId],
+      );
+      return results;
+    } catch (e) {
+      print('Error querying identified species: $e');
       return [];
     }
   }
@@ -724,30 +794,72 @@ VALUES
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchQuadratsByProjectID(
-      int projectID) async {
+  // Future<List<Map<String, dynamic>>> fetchQuadratsByProjectID(
+  //     int projectID) async {
+  //   final db = await database;
+  //   final List<Map<String, dynamic>> quadrats = await db.query(
+  //     'Quadrats',
+  //     where: 'project_id = ?',
+  //     whereArgs: [projectID],
+  //   );
+  //   return quadrats;
+  //   // return List.generate(maps.length, (i) {
+  //   //   return maps[i]['quadrat_name'] as String;
+  //   // });
+  // }
+
+  Future<List<Map<String, dynamic>>> fetchQuadratsByProjectId(
+      int projectId) async {
     final db = await database;
-    final List<Map<String, dynamic>> quadrats = await db.query(
+    return await db.query(
       'Quadrats',
       where: 'project_id = ?',
-      whereArgs: [projectID],
+      whereArgs: [projectId],
     );
-    return quadrats;
-    // return List.generate(maps.length, (i) {
-    //   return maps[i]['quadrat_name'] as String;
-    // });
   }
 
-  Future<String?> getProjectNameByID(int projectID) async {
+  // Future<String?> getProjectNameByID(int projectID) async {
+  //   final db = await database;
+  //   final List<Map<String, dynamic>> results = await db.query(
+  //     'Projects',
+  //     where: 'project_id = ?',
+  //     whereArgs: [projectID],
+  //   );
+
+  //   if (results.isNotEmpty) {
+  //     return results.first['project_name'] as String;
+  //   }
+  //   return null;
+  // }
+Future<String?> getProjectNameById(int projectId) async {
+    final db = await database;
+
+    // Query to get the project name by ID
+    List<Map<String, dynamic>> result = await db.query(
+      'Projects',
+      columns: ['project_name'],
+      where: 'project_id = ?',
+      whereArgs: [projectId],
+    );
+
+    // Check if we have results and return the project name
+    if (result.isNotEmpty) {
+      return result.first['project_name'] as String?;
+    }
+    
+    return null; // Return null if no project found
+  }
+
+  Future<String?> getQuadratNameByID(int quadratID) async {
     final db = await database;
     final List<Map<String, dynamic>> results = await db.query(
-      'Projects',
-      where: 'project_id = ?',
-      whereArgs: [projectID],
+      'Quadrats',
+      where: 'quadrat_id = ?',
+      whereArgs: [quadratID],
     );
 
     if (results.isNotEmpty) {
-      return results.first['project_name'] as String;
+      return results.first['quadrat_name'] as String;
     }
     return null;
   }

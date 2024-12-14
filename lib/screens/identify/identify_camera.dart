@@ -220,20 +220,6 @@ class _ImageIdentifyState extends State<ImageIdentify> {
             const SizedBox(
               height: 10,
             ),
-            if (output == 'Unidentified')
-              const Text('')
-            else
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            SpeciesDetails(speciesinfo: speciesinfo),
-                      ),
-                    );
-                  },
-                  child: const Text('See Species Information')),
             const SizedBox(
               height: 10,
             ),
@@ -262,9 +248,33 @@ class _ImageIdentifyState extends State<ImageIdentify> {
                 },
                 child: const Text('Save Identified Specie to Database'),
               ),
+            if (cleanImageName(output) == '0 Unidentified')
+              const Text('')
+            else
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            SpeciesDetails(speciesinfo: speciesinfo),
+                      ),
+                    );
+                  },
+                  child: const Text('See Species Information')),
           ],
         ),
       ),
     );
+  }
+
+  String cleanImageName(String imageName) {
+    // Remove all digits from the string
+    String withoutNumbers = imageName.replaceAll(RegExp(r'\d+'), '');
+
+    // Optionally, you can split the string by spaces or underscores and join it back
+    List<String> parts =
+        withoutNumbers.split(RegExp(r'[_\s]+')); // Split by underscore or space
+    return parts.join(' '); // Join back with a space
   }
 }

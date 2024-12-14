@@ -92,7 +92,7 @@ import 'package:path/path.dart'; // Required for path manipulation
 import 'dart:typed_data'; // Required for Uint8List
 
 import 'package:zingexpo/database/database.dart';
-import 'package:zingexpo/screens/SpeciesFound/species_found_info.dart'; // Required for LocalDatabase
+import 'package:zingexpo/screens/SpeciesFound/species_found_info.dart'; // Required for SpeciesFoundInfo
 
 class CircleInfoPage extends StatefulWidget {
   final int projectId;
@@ -107,11 +107,28 @@ class CircleInfoPage extends StatefulWidget {
 class _CircleInfoPageState extends State<CircleInfoPage> {
   List<Map<String, Object?>> identifiedSpecies = [];
   bool isLoading = true; // Loading state
+  List<Map<String, dynamic>> groupedImages = [];
 
   @override
   void initState() {
     super.initState();
     fetchIdentifiedSpecies(widget.projectId);
+    fetchGroupedImages(); // Fetch grouped images
+  }
+
+  Future<void> fetchGroupedImages() async {
+    try {
+      groupedImages =
+          await LocalDatabase().getImagesByProject(widget.projectId);
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching grouped images: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> fetchIdentifiedSpecies(int projectId) async {
@@ -136,58 +153,59 @@ class _CircleInfoPageState extends State<CircleInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-              builder: (context) =>
-                  SpeciesFoundInfo(projectID: widget.projectId)),
-        );
-      }, // Add tap functionality
-      child: Container(
-        // height: 50, // Set a fixed height for the CircleInfoPage
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : identifiedSpecies.isEmpty
-                ?
-                // Center vertically
-                SizedBox(
-                    width: MediaQuery.of(context).size.width,
-
-                    // color: Colors.pink,
-                    // width: MediaQuery.of(context).size.width * .50,
-                    // height: MediaQuery.of(context).size.height * 0.10,
-                    child: const Padding(
-                      padding: EdgeInsets.only(top: 8.0),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                               'No identified images yet.',
-                              style: TextStyle(fontSize: 10),
-                            ),
-                            Text(
-                              'Start Identifying Images below',
-                              style: TextStyle(fontSize: 7),
-                            ),
-                          ],
-                        ),
+    return Center(
+      child: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : identifiedSpecies.isEmpty
+              ? SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: const Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'No identified images yet.',
+                            style: TextStyle(fontSize: 10),
+                          ),
+                          Text(
+                            'Start Identifying Images below',
+                            style: TextStyle(fontSize: 7),
+                          ),
+                        ],
                       ),
                     ),
-                  )
-                : Center(
-                    child: Wrap(
-                      alignment: WrapAlignment.start,
-                      children: identifiedSpecies.map((species) {
-                        Uint8List? imageBytes =
-                            species['image_path'] as Uint8List?;
-                        String? imageName = species['image_name'] as String?;
-                        int speciesCount = species['count'] as int? ??
-                            0; // Assuming count is provided in species data
+                  ),
+                )
+              : Center(
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    children: groupedImages.map((group) {
+                      Uint8List? imageBytes = group['image_path'] as Uint8List?;
+                      String? imageName = group['image_name'] as String?;
+                      int totalCount = group['total_count'] as int? ?? 0;
 
-                        return Column(
+                      return GestureDetector(
+                        onTap: () {
+                          // Filter species based on the image name of the clicked group
+                          List<Map<String, Object?>> speciesInGroup =
+                              identifiedSpecies.where((species) {
+                            return species['image_name'] == imageName;
+                          }).toList();
+
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => SpeciesFoundInfo(
+                                projectID: widget.projectId,
+                                species:
+                                    speciesInGroup, // Pass the filtered species
+                              ),
+                            ),
+                          );
+                        },
+                        child: Column(
                           children: [
                             Stack(
                               children: [
@@ -203,32 +221,30 @@ class _CircleInfoPageState extends State<CircleInfoPage> {
                                           ? MemoryImage(
                                               imageBytes) // Use MemoryImage for Uint8List
                                           : const AssetImage(
-                                                  'assets/placeholder.png')
+                                                  'assets/placeholder.jpg')
                                               as ImageProvider,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
                                 ),
                                 Positioned(
-                                  top: 0, // Positioning at the top
-                                  right: 24, // Positioning at the right
+                                  top: 0,
+                                  right: 24,
                                   child: Container(
-                                    width: 24.0, // Width of the badge
-                                    height: 24.0, // Height of the badge
+                                    width: 24.0,
+                                    height: 24.0,
                                     decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: Color.fromARGB(255, 8, 82,
-                                          10), // Background color of the badge
+                                      color: Color.fromARGB(255, 8, 82, 10),
                                     ),
                                     child: Center(
                                       child: Text(
-                                        speciesCount
+                                        totalCount
                                             .toString(), // Display the count
                                         style: const TextStyle(
                                           fontFamily: 'Poppins',
-                                          color: Colors.white, // Text color
-                                          fontSize:
-                                              10, // Adjust font size for the badge
+                                          color: Colors.white,
+                                          fontSize: 10,
                                         ),
                                       ),
                                     ),
@@ -236,7 +252,6 @@ class _CircleInfoPageState extends State<CircleInfoPage> {
                                 ),
                               ],
                             ),
-                            // Usage in your Text widget
                             Text(
                               cleanImageName(imageName
                                   .toString()), // Clean the image name before displaying
@@ -248,11 +263,11 @@ class _CircleInfoPageState extends State<CircleInfoPage> {
                               ),
                             ),
                           ],
-                        );
-                      }).toList(),
-                    ),
+                        ),
+                      );
+                    }).toList(),
                   ),
-      ),
+                ),
     );
   }
 
@@ -261,8 +276,7 @@ class _CircleInfoPageState extends State<CircleInfoPage> {
     String withoutNumbers = imageName.replaceAll(RegExp(r'\d+'), '');
 
     // Optionally, you can split the string by spaces or underscores and join it back
-    List<String> parts =
-        withoutNumbers.split(RegExp(r'[_\s]+')); // Split by underscore or space
+    List<String> parts = withoutNumbers.split(RegExp(r'[_\s]+'));
     return parts.join(' '); // Join back with a space
   }
 }

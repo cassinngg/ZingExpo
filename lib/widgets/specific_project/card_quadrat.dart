@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:zingexpo/database/database.dart';
 import 'package:zingexpo/sample/backups/backup_metadata.dart';
 import 'package:zingexpo/sample/sam.dart';
+import 'package:zingexpo/sample/sample_specific_quadrat.dart';
 import 'package:zingexpo/screens/edit_screens/edit_quadrat.dart';
 import 'package:zingexpo/screens/identify/identify_camera.dart';
 import 'package:zingexpo/screens/meta_data_related/image_meta_data.dart';
@@ -68,7 +69,17 @@ class _QuadratCardState extends State<QuadratCard> {
         return Material(
           child: InkWell(
             onTap: () {
-              // Navigate to the SpecificQuadrat page
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => trial(
+              //       // allData: widget.allData,
+              //       // projectID: widget.projectID,
+              //       quadratID: widget.quadratID, allData: widget.allData,
+              //       projectID: widget.projectID,
+              //     ),
+              //   ),
+              // );
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -246,8 +257,7 @@ class _QuadratCardState extends State<QuadratCard> {
                                           projectID: widget.projectID,
                                           quadratID: widget.quadratID,
                                           onUpdate: (updatedData) {
-                                            _onProjectUpdated(
-                                                updatedData); 
+                                            _onProjectUpdated(updatedData);
                                           },
                                         ),
                                       ),

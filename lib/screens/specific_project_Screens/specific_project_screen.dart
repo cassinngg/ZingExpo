@@ -90,13 +90,13 @@ class _SpecificProjectsPageState extends State<SpecificProjectsPage>
       _loadData();
     }
     setState(() {
-      isLoading = false; 
+      isLoading = false;
     });
     _loadData();
   }
 
   // final autoSizeGroup = AutoSizeGroup();
-  var _bottomNavIndex = 0; 
+  var _bottomNavIndex = 0;
 
   late AnimationController _fabAnimationController;
   late AnimationController _borderRadiusAnimationController;
@@ -197,7 +197,7 @@ class _SpecificProjectsPageState extends State<SpecificProjectsPage>
 
     for (var quadrat in quadratData) {
       projectDetails +=
-          "- Quadrant ID: ${quadrat['quadrat_id']}, Details: ${quadrat['details']}\n"; 
+          "- Quadrant ID: ${quadrat['quadrat_id']}, Details: ${quadrat['details']}\n";
     }
 
     // Share.share(projectDetails, subject: 'Check out this project!');

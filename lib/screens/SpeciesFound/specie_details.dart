@@ -57,7 +57,7 @@ class _SpeciesDetailsState extends State<SpeciesDetails> {
                       Image.asset(selectedGinger!['ginger_image']),
                       const SizedBox(height: 16),
                       Text(
-                        selectedGinger!['ginger_name'],
+                        cleanImageName(selectedGinger!['ginger_name']),
                         style: const TextStyle(
                             fontSize: 24, fontWeight: FontWeight.bold),
                       ),
@@ -71,5 +71,15 @@ class _SpeciesDetailsState extends State<SpeciesDetails> {
                 )
               : const Center(child: Text('No data found for this species.')),
     );
+  }
+
+  String cleanImageName(String imageName) {
+    // Remove all digits from the string
+    String withoutNumbers = imageName.replaceAll(RegExp(r'\d+'), '');
+
+    // Optionally, you can split the string by spaces or underscores and join it back
+    List<String> parts =
+        withoutNumbers.split(RegExp(r'[_\s]+')); // Split by underscore or space
+    return parts.join(' '); // Join back with a space
   }
 }
